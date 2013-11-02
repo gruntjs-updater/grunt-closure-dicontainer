@@ -1,0 +1,43 @@
+{
+  "name": "grunt-closure-dicontainer",
+  "version": "0.1.0",
+  "description": "DI Container for Google Closure with automatic registration and strongly typed object graph resolving.",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "homepage": "https://github.com/steida/grunt-closure-dicontainer",
+  "author": {
+    "name": "Daniel Steigerwald",
+    "email": "daniel@steigerwald.cz",
+    "url": "daniel.steigerwald.cz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/steida/grunt-closure-dicontainer.git"
+  },
+  "keywords": [
+    "gruntplugin",
+    "google",
+    "closure",
+    "di",
+    "container"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/steida/grunt-closure-dicontainer/issues"
+  },
+  "dependencies": {
+    "di": "0.0.1"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-coffee": "~0.7.0",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-este": "~2.3.10",
+    "grunt-este-watch": "~0.1.10"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.1"
+  }
+}
