@@ -47,6 +47,7 @@ module.exports = (grunt) ->
 
     esteWatch:
       options:
+        livereload: enabled: false
         dirs: [
           '{lib,tasks,test}/**/'
         ]
