@@ -13,16 +13,31 @@ module.exports = (grunt) ->
   grunt.registerMultiTask 'closure_dicontainer', 'DI Container for Google Closure with automatic registration and strongly typed object graph resolving.', ->
 
     options = @options
-      ###
-        Object to define what should be resolved. Key is property and value
-        is name with full namespace.
-      ###
-      resolve:
-        app: 'este.App'
+
+      # Namespace for generated DI container.
+      # Remember to require it in app.start: goog.require('app.diContainer');
+      namespace: 'app.diContainer'
+
+      # Remember you can use '<%=' syntax.
+      parameters:
+        app:
+          id: 'este-app'
+
+      # Create factories on DI container instance.
+      # Example: app.diContainer(config).esteApp().start()
+      factories: ['este.App']
+
+      # Configure behaviour for any namespace.
+      configure:
+        'este.storage.Base':
+          bindTo: 'este.storage.Rest'
+        'este.App':
+          lifestyle: 'singleton'
+          parameters: ['<%= closure_dicontainer.options.parameters.app.id %>']
 
     @files.forEach (file) ->
       deps = getDeps file
-      dest = dicontainer deps, options
+      dest = dicontainer options, deps
       grunt.file.write file.dest, dest
       grunt.log.writeln "File \"#{file.dest}\" created."
 
