@@ -32,13 +32,15 @@ module.exports = (grunt) ->
         files:
           'tmp/default_options_dicontainer.js': 'test/fixtures/deps.js'
 
-      custom_options:
-        files:
-          'tmp/custom_options_dicontainer.js': 'test/fixtures/deps.js'
-        options:
-          # TODO: neco jinyho, a jinak
-          resolve:
-            app: 'este.App'
+      # custom_options:
+      #   files:
+      #     'tmp/custom_options_dicontainer.js': 'test/fixtures/deps.js'
+      #   options:
+      #     values:
+      #       foo: 'bla'
+      #     types:
+      #       app: 'este.App'
+      #     factories:
 
     nodeunit:
       tests: [
