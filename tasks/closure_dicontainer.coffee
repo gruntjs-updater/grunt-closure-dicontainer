@@ -8,7 +8,7 @@
 
 module.exports = (grunt) ->
 
-  # dicontainer = require '../lib/dicontainer'
+  dicontainer = require '../lib'
 
   grunt.registerMultiTask 'closure_dicontainer', 'DI Container for Google Closure with automatic registration and strongly typed object graph resolving.', ->
 
@@ -20,19 +20,27 @@ module.exports = (grunt) ->
       resolve:
         app: 'este.App'
 
-    # content = dicontainer(options.depsPath, options.prefix, options.resolve)
-    # grunt.file.write options.outputFile, content
-    # grunt.log.writeln 'File ' + options.outputFile.yellow + ' created.'
+    @files.forEach (file) ->
+      deps = getDeps file
+      dest = dicontainer deps, options
+      grunt.file.write file.dest, dest
+      grunt.log.writeln "File \"#{file.dest}\" created."
 
-    @files.forEach (f) ->
-      src = f.src.filter((filepath) ->
-        return true if grunt.file.exists filepath
-        grunt.log.warn "Source file \"#{filepath}\" not found."
-        false
-      ).map((filepath) ->
-        grunt.file.read filepath
-        # TODO: resolve paths and make some global deps structure
-      ).join()
+  getDeps = (file) ->
+    deps = {}
+    file.src.filter(notExistingFiles).forEach (file) -> addDeps deps, file
+    deps
 
-      grunt.file.write f.dest, 'src'
-      grunt.log.writeln "File \"#{f.dest}\" created."
+  notExistingFiles = (file) ->
+    return true if grunt.file.exists file
+    grunt.log.warn "Source file \"#{file}\" not found."
+    false
+
+  addDeps = (deps, file) ->
+    goog = addDependency: (file, namespaces) ->
+      deps[namespace] = absolutizePath file for namespace in namespaces
+      return
+    eval grunt.file.read file
+
+  absolutizePath = (file) ->
+    file.replace /\.\.\//g, ''
