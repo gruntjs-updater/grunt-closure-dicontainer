@@ -61,7 +61,9 @@ module.exports = (grunt) ->
 
       js: (filepath) ->
         grunt.config ['esteUnitTests', 'all', 'src'], filepath
-        ['test']
+        # Because to test closure_dicontainer we need to reload task somehow,
+        # and loadTasks does not help.
+        ['esteUnitTests']
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -70,7 +72,13 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-este-watch'
   grunt.loadTasks 'tasks'
 
-  grunt.registerTask 'default', ['build', 'test', 'run']
+  grunt.registerTask 'default', ['build', 'esteUnitTests', 'run']
   grunt.registerTask 'build', ['clean', 'coffee']
-  grunt.registerTask 'test', ['esteUnitTests', 'closure_dicontainer', 'nodeunit']
   grunt.registerTask 'run', ['esteWatch']
+
+  grunt.registerTask 'test', [
+    'build'
+    'esteUnitTests'
+    'closure_dicontainer'
+    'nodeunit'
+  ]
