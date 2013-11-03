@@ -35,7 +35,8 @@
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-este": "~2.3.10",
-    "grunt-este-watch": "~0.1.10"
+    "grunt-este-watch": "~0.1.10",
+    "difflet": "~0.2.6"
   },
   "peerDependencies": {
     "grunt": "~0.4.1"
