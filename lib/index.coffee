@@ -6,20 +6,20 @@ di = require 'di'
   @return {string} Container source code in JavaScript.
 ###
 module.exports = (options, deps) ->
-  'src'
 
-# var module = {
-#   // 'car': ['type', Car],
-#   // 'engine': ['factory', createPetrolEngine],
-#   // 'power': ['value', 1184] // probably Bugatti Veyron
-# };
-# new di.Injector([module]).invoke(function(car) {
-#   car.start();
-# var output = '';
-# for property in options.resolve {
-#   fullqualifiedName = options.resolve[property];
-#   output += makeCode(property, fullqualifiedName, deps);
-# }
+  # type, factory, value
+  module =
+    config: ['value', options.config]
+    deps: ['value', deps]
+    factories: ['value', options.factories]
+    generator: ['factory', require './generator']
+    intro: ['value', require './intro']
+    namespace: ['value', options.namespace]
+    # types: ['value', options.types]
 
-# makeCode = (property, fullqualifiedName, deps) ->
-#   property =
+  src = null
+
+  new di.Injector([module]).invoke (generator) ->
+    src = generator()
+
+  src

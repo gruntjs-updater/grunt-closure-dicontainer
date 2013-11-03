@@ -18,22 +18,25 @@ module.exports = (grunt) ->
       # Remember to require it in app.start: goog.require('app.diContainer');
       namespace: 'app.diContainer'
 
-      # Remember you can use '<%=' syntax.
-      parameters:
+      # Default config. Can be overriden with app.diContainer factory.
+      config:
         app:
           id: 'este-app'
 
-      # Create factories on DI container instance.
       # Example: app.diContainer(config).esteApp().start()
       factories: ['este.App']
 
-      # Configure behaviour for any namespace.
-      configure:
-        'este.storage.Base':
-          bindTo: 'este.storage.Rest'
-        'este.App':
-          lifestyle: 'singleton'
-          parameters: ['<%= closure_dicontainer.options.parameters.app.id %>']
+      # TODO: lifestyle atd..
+      # types:
+      #   'este.App':
+      #     arguments: ['$app.id']
+      #   'este.storage.Base':
+      #     bindTo:
+      #       'este.storage.Rest':
+      #         hasParent: 'goog.Fok'
+      #       'este.storage.Rest'
+
+    # TODO: validate passed options
 
     @files.forEach (file) ->
       deps = getDeps file
