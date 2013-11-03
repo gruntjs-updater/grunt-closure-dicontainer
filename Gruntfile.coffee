@@ -51,11 +51,7 @@ module.exports = (grunt) ->
       options:
         livereload: enabled: false
         dirs: [
-          # '{lib,tasks,test}/**/'
-          # pomohlo to? třeba to resolvuje blbě.. ty výpadky jsou na hovno
-          'lib/**/'
-          'tasks/**/'
-          'test/**/'
+          '{lib,tasks,test}/**/'
         ]
 
       coffee: (filepath) ->

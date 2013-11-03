@@ -14,13 +14,15 @@ module.exports = (options, deps) ->
     deps: ['value', deps]
     factories: ['value', options.factories]
     factoryNamespace: ['value', options.namespace]
-    generator: ['factory', require './generator']
-    intro: ['value', require './generators/intro']
+    createIntro: ['factory', require './create/intro']
+    createBody: ['factory', require './create/body']
+    createOutro: ['factory', require './create/outro']
+    createAll: ['factory', require './create/all']
     # types: ['value', options.types]
 
   src = null
 
-  new di.Injector([module]).invoke (generator) ->
-    src = generator()
+  new di.Injector([module]).invoke (createAll) ->
+    src = createAll()
 
   src
