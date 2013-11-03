@@ -4,22 +4,24 @@ suite 'generator', ->
 
   introMock = null
   factoryNamespace = null
+  classNamespace = null
   deps = null
 
   setup ->
     introMock = -> 'intro'
     factoryNamespace = 'app.diContainer'
+    classNamespace = 'app.DiContainer'
     deps =
       'xyz.Bla': 'test/fixtures/bla.js'
       'xyz.Foo': 'test/fixtures/foo.js'
 
   runGenerator = ->
-    generator(factoryNamespace, introMock, deps)()
+    generator(factoryNamespace, classNamespace, introMock, deps)()
 
   test 'should call intro with params', (done) ->
     introMock = (p_factoryNamespace, p_classNamespace, p_requiredNamespaces) ->
       assert.equal p_factoryNamespace, factoryNamespace
-      assert.equal p_classNamespace, 'app.DiContainer'
+      assert.equal p_classNamespace, classNamespace
       assert.deepEqual p_requiredNamespaces, ['xyz.Bla', 'xyz.Foo']
       done()
     runGenerator()

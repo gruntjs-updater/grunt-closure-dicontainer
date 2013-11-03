@@ -51,7 +51,11 @@ module.exports = (grunt) ->
       options:
         livereload: enabled: false
         dirs: [
-          '{lib,tasks,test}/**/'
+          # '{lib,tasks,test}/**/'
+          # pomohlo to? třeba to resolvuje blbě.. ty výpadky jsou na hovno
+          'lib/**/'
+          'tasks/**/'
+          'test/**/'
         ]
 
       coffee: (filepath) ->
@@ -82,3 +86,5 @@ module.exports = (grunt) ->
     'closure_dicontainer'
     'nodeunit'
   ]
+
+  grunt.registerTask 'loadTasks', 'Need to load tasks after build', ->
