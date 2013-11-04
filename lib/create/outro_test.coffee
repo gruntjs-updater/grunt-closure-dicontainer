@@ -20,4 +20,5 @@ suite 'createOutro', ->
         // });
         // this.instances = null;
         goog.base(this, 'disposeInternal');
-      };"""
+      };
+    """

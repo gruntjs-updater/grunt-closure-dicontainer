@@ -39,4 +39,4 @@ module.exports = (factoryNamespace, classNamespace) ->
        */
       #{classNamespace}.prototype.config = null;
 
-      """
+    """

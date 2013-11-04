@@ -49,4 +49,4 @@ suite 'createIntro', ->
        */
       app.DiContainer.prototype.config = null;
 
-      """
+    """

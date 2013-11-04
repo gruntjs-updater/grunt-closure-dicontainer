@@ -9,6 +9,8 @@ suite 'createBody', ->
     bodyFactory = createBody()
     body = bodyFactory()
 
+  # mam: factories, classNamespace, deps
+
   test 'should return requiredNamespaces', ->
     assert.deepEqual body.requiredNamespaces, ['xyz.Bla', 'xyz.Foo']
 
@@ -25,4 +27,4 @@ suite 'createBody', ->
         return xyzFoo;
       };
 
-      """
+    """
