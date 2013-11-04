@@ -34,10 +34,10 @@ goog.inherits(app.DiContainer, goog.Disposable);
 app.DiContainer.prototype.config = null;
 
 /**
- * Factory for xyz.Foo.
- * @return {xyz.Foo}
+ * Factory for este.App.
+ * @return {este.App}
  */
-app.DiContainer.prototype.xyzFoo = function() {
+app.DiContainer.prototype.esteApp = function() {
   var xyzBla = new xyz.Bla;
   var xyzFoo = new xyz.Foo(xyzBla);
   return xyzFoo;
@@ -47,10 +47,8 @@ app.DiContainer.prototype.xyzFoo = function() {
  * Dispose all instances.
  */
 app.DiContainer.prototype.disposeInternal = function() {
-  // TODO: implement
-  // this.instances.forEach(function(instance) {
-  //   instance.dispose();
-  // });
-  // this.instances = null;
+  // TODO:
+  //  dispose disposable this.types
+  //  this.types = null;
   goog.base(this, 'disposeInternal');
 };

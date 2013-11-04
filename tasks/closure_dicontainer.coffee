@@ -24,7 +24,7 @@ module.exports = (grunt) ->
           id: 'este-app'
 
       # Example: app.diContainer(config).esteApp().start()
-      factories: ['este.App']
+      resolve: ['este.App']
 
       # TODO: lifestyle atd..
       # types:

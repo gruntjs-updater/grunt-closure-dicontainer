@@ -12,7 +12,7 @@ module.exports = (options, deps) ->
     classNamespace: ['value', require('./classnamespace')(options.namespace)]
     config: ['value', options.config]
     deps: ['value', deps]
-    factories: ['value', options.factories]
+    resolve: ['value', options.resolve]
     factoryNamespace: ['value', options.namespace]
     createIntro: ['factory', require './create/intro']
     createBody: ['factory', require './create/body']

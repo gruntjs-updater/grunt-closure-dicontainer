@@ -14,11 +14,9 @@ suite 'createOutro', ->
        * Dispose all instances.
        */
       ap.DiContainer.prototype.disposeInternal = function() {
-        // TODO: implement
-        // this.instances.forEach(function(instance) {
-        //   instance.dispose();
-        // });
-        // this.instances = null;
+        // TODO:
+        //  dispose disposable this.types
+        //  this.types = null;
         goog.base(this, 'disposeInternal');
       };
     """

@@ -8,6 +8,4 @@ module.exports = (createIntro, createBody, createOutro) ->
 
   ->
     body = createBody()
-    introSrc = createIntro body.requiredNamespaces
-
-    introSrc + body.src + createOutro()
+    createIntro(body.requiredNamespaces) + body.src + createOutro()
