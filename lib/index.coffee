@@ -11,13 +11,13 @@ module.exports = (options, deps) ->
   module =
     classNamespace: ['value', require('./classnamespace')(options.namespace)]
     config: ['value', options.config]
-    deps: ['value', deps]
-    resolve: ['value', options.resolve]
-    factoryNamespace: ['value', options.namespace]
+    create: ['factory', require './create']
     createIntro: ['factory', require './create/intro']
-    createBody: ['factory', require './create/body']
     createOutro: ['factory', require './create/outro']
-    createAll: ['factory', require './create/all']
+    deps: ['value', deps]
+    factoryNamespace: ['value', options.namespace]
+    resolve: ['value', options.resolve]
+    resolver: ['factory', require './resolver']
     # types: ['value', options.types]
 
   src = null
