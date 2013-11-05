@@ -18,7 +18,10 @@ module.exports = (diContainerClassName, resolve, resolver) ->
 
     createFactoryBody = (type) ->
       lines = []
+      yetCreatedTypes = []
       walk = (type) ->
+        return if yetCreatedTypes.indexOf(type) != -1
+        yetCreatedTypes.push type
         required.push type
         definition = resolver type
         walk argument for argument in definition.arguments

@@ -13,7 +13,7 @@ suite 'createBody', ->
     resolver = (type) ->
       types =
         'app.A':
-          arguments: ['app.B']
+          arguments: ['app.B', 'app.B']
         'app.B':
           arguments: []
       types[type]
@@ -28,7 +28,7 @@ suite 'createBody', ->
        */
       app.DiContainer.prototype.appA = function() {
         var appB = new app.B;
-        var appA = new app.A(appB);
+        var appA = new app.A(appB, appB);
         return appA;
       };
     """
