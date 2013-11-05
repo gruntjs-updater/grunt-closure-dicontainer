@@ -2,19 +2,19 @@ index = require './index'
 
 suite 'index', ->
 
-  resolver = null
   createIntro = null
+  createBody = null
   createOutro = null
 
   setup ->
-    resolver = ->
-      required: ['app.A', 'app.B']
-      body: 'body'
     createIntro = -> 'intro'
+    createBody = ->
+      required: ['app.A', 'app.B']
+      src: 'body'
     createOutro = -> 'outro'
 
   runGenerator = ->
-    index(resolver, createIntro, createOutro)()
+    index(createIntro, createBody, createOutro)()
 
   test 'should call intro with params', (done) ->
     createIntro = (p_required) ->
@@ -23,4 +23,4 @@ suite 'index', ->
     runGenerator()
 
   test 'should generate code', ->
-    assert.equal runGenerator(), 'introbodyoutro'
+    assert.equal runGenerator(), 'intro\n\nbody\n\noutro'

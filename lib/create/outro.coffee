@@ -1,13 +1,11 @@
-module.exports = (classNamespace) ->
+module.exports = (diContainerClassName) ->
 
   ->
     """
-
-
       /**
        * Dispose all instances.
        */
-      #{classNamespace}.prototype.disposeInternal = function() {
+      #{diContainerClassName}.prototype.disposeInternal = function() {
         // TODO:
         //  dispose disposable this.types
         //  this.types = null;

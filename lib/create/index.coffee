@@ -1,11 +1,15 @@
 ###*
-  @param {Function} resolver
   @param {Function} createIntro
+  @param {Function} createBody
   @param {Function} createOutro
   @return {string} Generated DI container source code.
 ###
-module.exports = (resolver, createIntro, createOutro) ->
+module.exports = (createIntro, createBody, createOutro) ->
 
   ->
-    resolved = resolver()
-    createIntro(resolved.required) + resolved.body + createOutro()
+    body = createBody()
+    [
+      createIntro body.required
+      body.src
+      createOutro()
+    ].join '\n\n'

@@ -7,22 +7,22 @@ di = require 'di'
 ###
 module.exports = (options, deps) ->
 
-  # type, factory, value
   module =
-    classNamespace: ['value', require('./classnamespace')(options.namespace)]
     config: ['value', options.config]
     create: ['factory', require './create']
+    createBody: ['factory', require './create/body']
     createIntro: ['factory', require './create/intro']
     createOutro: ['factory', require './create/outro']
     deps: ['value', deps]
-    factoryNamespace: ['value', options.namespace]
+    diContainerClassName: ['value',
+      require('./create/dicontainerclassname') options.factoryName]
+    diContainerFactoryName: ['value', options.factoryName]
     resolve: ['value', options.resolve]
-    resolver: ['factory', require './resolver']
+    resolver: ['factory', -> -> arguments: []] #require './resolver'
     # types: ['value', options.types]
 
   src = null
-
-  new di.Injector([module]).invoke (createAll) ->
-    src = createAll()
+  new di.Injector([module]).invoke (create) ->
+    src = create()
 
   src

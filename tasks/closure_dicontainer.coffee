@@ -14,9 +14,9 @@ module.exports = (grunt) ->
 
     options = @options
 
-      # Namespace for generated DI container.
+      # DI container factory name.
       # Remember to require it in app.start: goog.require('app.diContainer');
-      namespace: 'app.diContainer'
+      factoryName: 'app.diContainer'
 
       # Default config. Can be overriden with app.diContainer factory.
       config:
