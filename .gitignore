@@ -1,7 +1,7 @@
-grunt-closure-dicontainer.sublime-project
+grunt-closure-dicontainer.sublime-workspace
 node_modules
 npm-debug.log
 tmp
-lib/*.js
+lib/**/*.js
 tasks/*.js
 test/*.js
