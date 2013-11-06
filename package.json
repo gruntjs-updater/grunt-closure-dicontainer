@@ -27,7 +27,9 @@
     "url": "https://github.com/steida/grunt-closure-dicontainer/issues"
   },
   "dependencies": {
-    "di": "0.0.1"
+    "di": "0.0.1",
+    "esprima": "~1.0.4",
+    "doctrine": "0.0.5"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

@@ -2,9 +2,9 @@
 // Please do not edit.
 goog.provide('app.diContainer');
 
+goog.require('este.App');
+goog.require('este.Router');
 goog.require('goog.Disposable');
-goog.require('xyz.Bla');
-goog.require('xyz.Foo');
 
 /**
  * Factory for app.DiContainer.
@@ -38,9 +38,9 @@ app.DiContainer.prototype.config = null;
  * @return {este.App}
  */
 app.DiContainer.prototype.esteApp = function() {
-  var xyzBla = new xyz.Bla;
-  var xyzFoo = new xyz.Foo(xyzBla);
-  return xyzFoo;
+  var esteRouter = new este.Router;
+  var esteApp = new este.App(esteRouter);
+  return esteApp;
 };
 
 /**

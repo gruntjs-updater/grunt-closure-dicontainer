@@ -14,11 +14,12 @@ module.exports = (options, deps) ->
     createIntro: ['factory', require './create/intro']
     createOutro: ['factory', require './create/outro']
     deps: ['value', deps]
+    readFileSync: ['value', require('fs').readFileSync]
     diContainerClassName: ['value',
       require('./create/dicontainerclassname') options.factoryName]
     diContainerFactoryName: ['value', options.factoryName]
     resolve: ['value', options.resolve]
-    resolver: ['factory', -> -> arguments: []] #require './resolver'
+    typeParser: ['factory', require './typeparser']
     # types: ['value', options.types]
 
   src = null

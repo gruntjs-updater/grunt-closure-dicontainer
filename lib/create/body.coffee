@@ -1,9 +1,9 @@
-module.exports = (diContainerClassName, resolve, resolver) ->
+module.exports = (diContainerClassName, resolve, typeParser) ->
 
   ->
     required = []
     src = ''
-    # TODO: resolver cache for all
+    # TODO: typeParser cache for all
 
     createFactory = (type) ->
       """
@@ -23,7 +23,7 @@ module.exports = (diContainerClassName, resolve, resolver) ->
         return if yetCreatedTypes.indexOf(type) != -1
         yetCreatedTypes.push type
         required.push type
-        definition = resolver type
+        definition = typeParser type
         walk argument for argument in definition.arguments
         args = createArguments definition.arguments
         lines.push "var #{camelizeType type} = new #{type}#{args};"

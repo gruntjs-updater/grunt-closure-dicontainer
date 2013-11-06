@@ -4,4 +4,4 @@ npm-debug.log
 tmp
 lib/**/*.js
 tasks/*.js
-test/*.js
+test/**/*.js

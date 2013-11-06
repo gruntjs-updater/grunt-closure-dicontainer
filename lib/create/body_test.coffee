@@ -4,22 +4,22 @@ suite 'createBody', ->
 
   diContainerClassName = null
   resolve = null
-  resolver = null
+  typeParser = null
   factory = null
 
   setup ->
     diContainerClassName = 'app.DiContainer'
     resolve = ['app.A']
-    resolver = (type) ->
+    typeParser = (type) ->
       types =
         'app.A':
           arguments: ['app.B', 'app.B']
         'app.B':
           arguments: []
       types[type]
-    factory = createBody diContainerClassName, resolve, resolver
+    factory = createBody diContainerClassName, resolve, typeParser
 
-  test 'should create src', ->
+  test 'should create simple factory', ->
     resolved = factory()
     assert.equal resolved.src, """
       /**
