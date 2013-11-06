@@ -32,7 +32,8 @@ module.exports = (diContainerFactoryName, diContainerClassName) ->
        */
       #{diContainerClassName} = function(config) {
         goog.base(this);
-        this.config = config;
+        if (config)
+          this.config = config;
       };
       goog.inherits(#{diContainerClassName}, goog.Disposable);
 

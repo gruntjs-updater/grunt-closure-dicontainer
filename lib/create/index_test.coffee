@@ -23,4 +23,7 @@ suite 'index', ->
     runGenerator()
 
   test 'should generate code', ->
-    assert.equal runGenerator(), 'intro\n\nbody\n\noutro'
+    assert.equal runGenerator().code, 'intro\n\nbody\n\noutro'
+
+  test 'should generate code', ->
+    assert.deepEqual runGenerator().required, ['app.A', 'app.B']

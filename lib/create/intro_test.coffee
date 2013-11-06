@@ -40,7 +40,8 @@ suite 'createIntro', ->
        */
       app.DiContainer = function(config) {
         goog.base(this);
-        this.config = config;
+        if (config)
+          this.config = config;
       };
       goog.inherits(app.DiContainer, goog.Disposable);
 

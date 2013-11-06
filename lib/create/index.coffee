@@ -8,8 +8,11 @@ module.exports = (createIntro, createBody, createOutro) ->
 
   ->
     body = createBody()
-    [
+    code = [
       createIntro body.required
       body.src
       createOutro()
     ].join '\n\n'
+
+    code: code
+    required: body.required

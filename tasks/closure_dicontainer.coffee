@@ -18,6 +18,8 @@ module.exports = (grunt) ->
       # Remember to require it in app.start: goog.require('app.diContainer');
       factoryName: 'app.diContainer'
 
+      prefix: '../../../../'
+
       # Default config. Can be overriden with app.diContainer factory.
       config:
         app:
@@ -40,8 +42,9 @@ module.exports = (grunt) ->
 
     @files.forEach (file) ->
       deps = getDeps file
-      dest = dicontainer options, deps
-      grunt.file.write file.dest, dest
+      container = dicontainer options, deps
+      grunt.file.write file.dest, container.code
+      updateDeps file, container.required, options.prefix, options.factoryName
       grunt.log.writeln "File \"#{file.dest}\" created."
 
   getDeps = (file) ->
@@ -56,9 +59,23 @@ module.exports = (grunt) ->
 
   addDeps = (deps, file) ->
     goog = addDependency: (file, namespaces) ->
-      deps[namespace] = absolutizePath file for namespace in namespaces
+      deps[namespace] = fixPaths file for namespace in namespaces
       return
     eval grunt.file.read file
 
-  absolutizePath = (file) ->
+  fixPaths = (file) ->
+    # ../../../../
     file.replace /\.\.\//g, ''
+
+  updateDeps = (file, required, prefix, factoryName) ->
+    depsPath = file.src[0]
+    src = grunt.file.read depsPath
+    line = [
+      "goog.addDependency('#{prefix}#{file.dest}', "
+      "['#{factoryName}'], "
+      "['#{required.join '\', \''}']);"
+    ].join ''
+    return if src.indexOf(line) > -1
+
+    src += '\n' + line
+    grunt.file.write depsPath, src

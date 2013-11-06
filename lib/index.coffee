@@ -22,8 +22,8 @@ module.exports = (options, deps) ->
     typeParser: ['factory', require './typeparser']
     # types: ['value', options.types]
 
-  src = null
+  diContainer = null
   new di.Injector([module]).invoke (create) ->
-    src = create()
+    diContainer = create()
 
-  src
+  diContainer
