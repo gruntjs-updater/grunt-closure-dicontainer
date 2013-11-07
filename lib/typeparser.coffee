@@ -9,7 +9,7 @@ module.exports = (deps, readFileSync, grunt) ->
     if !file
       fail grunt, """
         Missing '#{type}' definition in deps.js file.
-        You probably forgot to write goog.provide('#{type}');
+        You probably forgot to write 'goog.provide('#{type}');'.
       """
       return null
 

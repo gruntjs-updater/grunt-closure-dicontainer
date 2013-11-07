@@ -30,10 +30,8 @@ suite 'typeParser', ->
         """
       sources[file]
     grunt =
-      log:
-        error: ->
-      fail:
-        warn: ->
+      log: error: ->
+      fail: warn: ->
 
   resolve = (type) ->
     typeParser(deps, readFileSync, grunt) type
@@ -65,7 +63,7 @@ suite 'typeParser', ->
   test 'should handle deps.js missing type definition', ->
     calls = arrangeErrorWarnCalls """
       Missing 'app.C' definition in deps.js file.
-      You probably forgot to write goog.provide('app.C');
+      You probably forgot to write 'goog.provide('app.C');'.
     """
     resolved = resolve 'app.C'
     assertNullResultWithErrorAndWarnCalls calls, resolved
