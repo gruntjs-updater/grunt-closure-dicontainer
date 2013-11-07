@@ -1,29 +1,67 @@
 esprima = require 'esprima'
 doctrine = require 'doctrine'
 
-module.exports = (deps, readFileSync) ->
+module.exports = (deps, readFileSync, grunt) ->
 
   (type) ->
     file = deps[type]
-    # TODO: error if file isn't is in deps
-    src = readFileSync file, 'utf8'
-    # TODO: error if file not found
-    annotation = getAnnotation src, type
-    # TODO: error if type annotation not found, via TDD ofc
+
+    if !file
+      fail grunt, """
+        Missing '#{type}' definition in deps.js file.
+        You probably forgot to write goog.provide('#{type}');
+      """
+      return null
+
+    try
+      src = readFileSync file, 'utf8'
+    catch e
+      fail grunt, "File '#{file}' failed to load."
+      return null
+
+    annotation = getAnnotation file, src, type, grunt
+    if !annotation
+      return null
+
     arguments: getArguments annotation
 
-getAnnotation = (src, type) ->
+getAnnotation = (file, src, type, grunt) ->
   typeIndex = src.indexOf "#{type} ="
-  # TODO: error if type not found, via TDD ofc
+
+  if typeIndex == -1
+    fail grunt, "Type '#{type}' definition not found in file: '#{file}'."
+    return
+
   srcWhereLastCommentIsTypeAnnotation = src.slice 0, typeIndex
-  syntax = esprima.parse srcWhereLastCommentIsTypeAnnotation,
-    range: true
-    comment: true
-  syntax.comments[syntax.comments.length - 1].value
+  try
+    syntax = esprima.parse srcWhereLastCommentIsTypeAnnotation,
+      range: true
+      comment: true
+      tokens: true
+  catch e
+    fail grunt, """
+      Esprima failed to parse type '#{type}'.
+      #{e.message}
+    """
+    return
+
+  lastComment = syntax.comments[syntax.comments.length - 1]
+  lastToken = syntax.tokens[syntax.tokens.length - 1]
+  lastCommentBelongToType =
+    lastComment && !lastToken ||
+    (lastToken && lastComment.range[1] > lastToken.range[1])
+  if !lastCommentBelongToType
+    fail grunt, "Type '#{type}' annotation not found in file: '#{file}'."
+    return
+
+  lastComment.value
 
 getArguments = (annotation) ->
   parsed = doctrine.parse "/*#{annotation}*/", unwrap: true
-  # # TODO: error if error
   for tag in parsed.tags
     continue if tag.title != 'param'
     tag.type.name
+
+fail = (grunt, message) ->
+  grunt.log.error message
+  grunt.fail.warn 'Type parsing failed.'

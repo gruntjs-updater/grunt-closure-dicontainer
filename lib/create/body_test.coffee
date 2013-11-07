@@ -6,6 +6,7 @@ suite 'createBody', ->
   resolve = null
   typeParser = null
   factory = null
+  resolved = null
 
   setup ->
     diContainerClassName = 'app.DiContainer'
@@ -17,10 +18,15 @@ suite 'createBody', ->
         'app.B':
           arguments: []
       types[type]
+    factory = null
+    resolved = null
+
+  resolveFactory = ->
     factory = createBody diContainerClassName, resolve, typeParser
+    resolved = factory()
 
   test 'should create simple factory', ->
-    resolved = factory()
+    resolveFactory()
     assert.equal resolved.src, """
       /**
        * Factory for app.A.
@@ -34,5 +40,18 @@ suite 'createBody', ->
     """
 
   test 'should create required', ->
-    resolved = factory()
+    resolveFactory()
     assert.deepEqual resolved.required, ['app.A', 'app.B']
+
+  test 'should handle falsy type definition', ->
+    resolve = ['app.iAmNotExists']
+    resolveFactory()
+    assert.equal resolved.src, """
+      /**
+       * Factory for app.iAmNotExists.
+       * @return {app.iAmNotExists}
+       */
+      app.DiContainer.prototype.appIAmNotExists = function() {
+        return appIAmNotExists;
+      };
+    """

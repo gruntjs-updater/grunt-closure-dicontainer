@@ -1,4 +1,4 @@
-module.exports = (diContainerClassName, resolve, typeParser) ->
+module.exports = (diContainerClassName, resolve, typeParser, grunt) ->
 
   ->
     required = []
@@ -24,6 +24,7 @@ module.exports = (diContainerClassName, resolve, typeParser) ->
         yetCreatedTypes.push type
         required.push type
         definition = typeParser type
+        return if !definition
         walk argument for argument in definition.arguments
         args = createArguments definition.arguments
         lines.push "var #{camelizeType type} = new #{type}#{args};"
