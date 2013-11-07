@@ -4,6 +4,7 @@ suite 'createBody', ->
 
   diContainerClassName = null
   resolve = null
+  types = null
   typeParser = null
   factory = null
   resolved = null
@@ -11,12 +12,12 @@ suite 'createBody', ->
   setup ->
     diContainerClassName = 'app.DiContainer'
     resolve = ['app.A']
+    types =
+      'app.A':
+        arguments: ['app.B']
+      'app.B':
+        arguments: []
     typeParser = (type) ->
-      types =
-        'app.A':
-          arguments: ['app.B', 'app.B']
-        'app.B':
-          arguments: []
       types[type]
     factory = null
     resolved = null
@@ -25,7 +26,22 @@ suite 'createBody', ->
     factory = createBody diContainerClassName, resolve, typeParser
     resolved = factory()
 
-  test 'should create simple factory', ->
+  test 'should resolve dependencies', ->
+    resolveFactory()
+    assert.equal resolved.src, """
+      /**
+       * Factory for app.A.
+       * @return {app.A}
+       */
+      app.DiContainer.prototype.appA = function() {
+        var appB = new app.B;
+        var appA = new app.A(appB);
+        return appA;
+      };
+    """
+
+  test 'should return the same instance', ->
+    types['app.A'] = arguments: ['app.B', 'app.B']
     resolveFactory()
     assert.equal resolved.src, """
       /**
@@ -43,7 +59,7 @@ suite 'createBody', ->
     resolveFactory()
     assert.deepEqual resolved.required, ['app.A', 'app.B']
 
-  test 'should handle falsy type definition', ->
+  test 'should do not generate code missing type definition', ->
     resolve = ['app.iAmNotExists']
     resolveFactory()
     assert.equal resolved.src, """
