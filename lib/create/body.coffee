@@ -19,16 +19,31 @@ module.exports = (diContainerClassName, resolve, typeParser, grunt) ->
     createFactoryBody = (type) ->
       lines = []
       yetCreatedTypes = []
-      walk = (type) ->
+
+      walk = (type, resolving) ->
+        if resolving.indexOf(type) > -1
+          circularDep = resolving.concat(type).join ' -> '
+          fail grunt, "Can not resolve circular dependency: #{circularDep}."
+          return
+        resolving.push type
+
         return if yetCreatedTypes.indexOf(type) != -1
         yetCreatedTypes.push type
+
+        # TODO: When transient, prevent repeated types in array.
         required.push type
+
         definition = typeParser type
         return if !definition
-        walk argument for argument in definition.arguments
+
+        for argument in definition.arguments
+          walk argument, resolving.slice 0
+
         args = createArguments definition.arguments
         lines.push "var #{camelizeType type} = new #{type}#{args};"
-      walk type
+
+      walk type, []
+
       lines.push "return #{camelizeType type};"
       lines.join '\n  '
 
@@ -54,3 +69,7 @@ camelizeType = (type) ->
     else
       camelized += chunk
   camelized
+
+fail = (grunt, message) ->
+  grunt.log.error message
+  grunt.fail.warn 'Factory creating failed.'

@@ -6,6 +6,7 @@ suite 'createBody', ->
   resolve = null
   types = null
   typeParser = null
+  grunt = null
   factory = null
   resolved = null
 
@@ -19,12 +20,28 @@ suite 'createBody', ->
         arguments: []
     typeParser = (type) ->
       types[type]
+    grunt =
+      log: error: ->
+      fail: warn: ->
     factory = null
     resolved = null
 
   resolveFactory = ->
-    factory = createBody diContainerClassName, resolve, typeParser
+    factory = createBody diContainerClassName, resolve, typeParser, grunt
     resolved = factory()
+
+  arrangeErrorWarnCalls = (errorMessage) ->
+    calls = ''
+    grunt.log.error = (message) ->
+      assert.equal message, errorMessage if errorMessage
+      calls += 'error'
+    grunt.fail.warn = (message) ->
+      assert.equal message, 'Factory creating failed.'
+      calls += 'warn'
+    -> calls
+
+  assertErrorAndWarnCalls = (calls) ->
+    assert.equal calls(), 'errorwarn'
 
   test 'should resolve dependencies', ->
     resolveFactory()
@@ -59,7 +76,7 @@ suite 'createBody', ->
     resolveFactory()
     assert.deepEqual resolved.required, ['app.A', 'app.B']
 
-  test 'should do not generate code missing type definition', ->
+  test 'should do not generate code for missing type definition', ->
     resolve = ['app.iAmNotExists']
     resolveFactory()
     assert.equal resolved.src, """
@@ -71,3 +88,15 @@ suite 'createBody', ->
         return appIAmNotExists;
       };
     """
+
+  test 'should handle circular dependency', ->
+    calls = arrangeErrorWarnCalls """
+      Can not resolve circular dependency: app.A -> app.B -> app.A.
+    """
+    types =
+      'app.A':
+        arguments: ['app.B']
+      'app.B':
+        arguments: ['app.A']
+    resolveFactory()
+    assertErrorAndWarnCalls calls
