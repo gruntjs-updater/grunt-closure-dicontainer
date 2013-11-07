@@ -40,12 +40,15 @@ module.exports = (grunt) ->
 
     # TODO: validate passed options
 
-    @files.forEach (file) ->
+    @files.forEach (file) =>
       deps = getDeps file
       container = dicontainer options, deps, grunt
-      grunt.file.write file.dest, container.code
-      updateDeps file, container.required, options.prefix, options.factoryName
-      grunt.log.writeln "File \"#{file.dest}\" created."
+      if !@errorCount
+        grunt.file.write file.dest, container.code
+        updateDeps file, container.required, options.prefix, options.factoryName
+        grunt.log.writeln "File \"#{file.dest}\" created."
+        return
+      grunt.log.writeln "File '#{file.dest}' not written because task failed."
 
   getDeps = (file) ->
     deps = {}
