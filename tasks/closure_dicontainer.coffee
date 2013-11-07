@@ -43,12 +43,10 @@ module.exports = (grunt) ->
     @files.forEach (file) =>
       deps = getDeps file
       container = dicontainer options, deps, grunt
-      if !@errorCount
-        grunt.file.write file.dest, container.code
-        updateDeps file, container.required, options.prefix, options.factoryName
-        grunt.log.writeln "File \"#{file.dest}\" created."
-        return
-      grunt.log.writeln "File '#{file.dest}' not written because task failed."
+      return if @errorCount
+      grunt.file.write file.dest, container.code
+      updateDeps file, container.required, options.prefix, options.factoryName
+      grunt.log.writeln "File \"#{file.dest}\" created."
 
   getDeps = (file) ->
     deps = {}
@@ -82,3 +80,4 @@ module.exports = (grunt) ->
 
     src += '\n' + line
     grunt.file.write depsPath, src
+    grunt.log.writeln "File \"#{depsPath}\" created."
