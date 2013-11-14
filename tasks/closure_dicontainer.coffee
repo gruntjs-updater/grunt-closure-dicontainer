@@ -60,12 +60,12 @@ module.exports = (grunt) ->
 
   addDeps = (deps, file) ->
     goog = addDependency: (file, namespaces) ->
-      deps[namespace] = fixPaths file for namespace in namespaces
+      deps[namespace] = unrelativize file for namespace in namespaces
       return
     eval grunt.file.read file
 
-  fixPaths = (file) ->
-    # ../../../../
+  # Remove '../../../../'
+  unrelativize = (file) ->
     file.replace /\.\.\//g, ''
 
   updateDeps = (file, required, prefix, factoryName) ->
