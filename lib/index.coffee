@@ -16,7 +16,8 @@ module.exports = (options, deps, grunt) ->
     createIntro: ['factory', require './create/intro']
     createOutro: ['factory', require './create/outro']
     deps: ['value', deps]
-    diContainerClassName: ['value',require('./create/dicontainerclassname') options.factoryName]
+    diContainerClassName: ['value',
+      require('./create/dicontainerclassname') options.factoryName]
     diContainerFactoryName: ['value', options.factoryName]
     grunt: ['value', grunt]
     readFileSync: ['value', require('fs').readFileSync]
