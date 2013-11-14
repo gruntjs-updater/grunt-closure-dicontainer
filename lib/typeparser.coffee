@@ -33,6 +33,7 @@ getAnnotation = (file, src, type, grunt) ->
     return
 
   srcWhereLastCommentIsTypeAnnotation = src.slice 0, typeIndex
+
   try
     syntax = esprima.parse srcWhereLastCommentIsTypeAnnotation,
       range: true

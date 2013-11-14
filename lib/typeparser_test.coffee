@@ -5,7 +5,6 @@ suite 'typeParser', ->
   deps = null
   readFileSync = null
   grunt = null
-  resolve = null
 
   setup ->
     deps =
@@ -33,7 +32,7 @@ suite 'typeParser', ->
       log: error: ->
       fail: warn: ->
 
-  resolve = (type) ->
+  parse = (type) ->
     typeParser(deps, readFileSync, grunt) type
 
   arrangeErrorWarnCalls = (errorMessage) ->
@@ -46,18 +45,18 @@ suite 'typeParser', ->
       calls += 'warn'
     -> calls
 
-  assertNullResultWithErrorAndWarnCalls = (calls, resolved) ->
+  assertNullResultWithErrorAndWarnCalls = (calls, parsed) ->
     assert.equal calls(), 'errorwarn'
-    assert.isNull resolved
+    assert.isNull parsed
 
-  test 'should resolve app.A', ->
-    resolved = resolve 'app.A'
-    assert.deepEqual resolved,
+  test 'should parse app.A', ->
+    parsed = parse 'app.A'
+    assert.deepEqual parsed,
       arguments: ['app.B', 'app.B']
 
-  test 'should resolve app.B', ->
-    resolved = resolve 'app.B'
-    assert.deepEqual resolved,
+  test 'should parse app.B', ->
+    parsed = parse 'app.B'
+    assert.deepEqual parsed,
       arguments: []
 
   test 'should handle deps.js missing type definition', ->
@@ -65,14 +64,14 @@ suite 'typeParser', ->
       Missing 'app.C' definition in deps.js file.
       You probably forgot to write 'goog.provide('app.C');'.
     """
-    resolved = resolve 'app.C'
-    assertNullResultWithErrorAndWarnCalls calls, resolved
+    parsed = parse 'app.C'
+    assertNullResultWithErrorAndWarnCalls calls, parsed
 
   test 'should handle missing file', ->
     calls = arrangeErrorWarnCalls "File 'app/a.js' failed to load."
     readFileSync = (file) -> throw new Error 'anything wrong'
-    resolved = resolve 'app.A'
-    assertNullResultWithErrorAndWarnCalls calls, resolved
+    parsed = parse 'app.A'
+    assertNullResultWithErrorAndWarnCalls calls, parsed
 
   test 'should handle missing type definition in source', ->
     calls = arrangeErrorWarnCalls "Type 'app.A' definition not found in file: 'app/a.js'."
@@ -84,8 +83,8 @@ suite 'typeParser', ->
        */
       fok.A = function(b, b) {}
     """
-    resolved = resolve 'app.A'
-    assertNullResultWithErrorAndWarnCalls calls, resolved
+    parsed = parse 'app.A'
+    assertNullResultWithErrorAndWarnCalls calls, parsed
 
   test 'should handle esprima parser error', ->
     calls = arrangeErrorWarnCalls """
@@ -96,16 +95,16 @@ suite 'typeParser', ->
       !
       app.A = function(b, b) {}
     """
-    resolved = resolve 'app.A'
-    assertNullResultWithErrorAndWarnCalls calls, resolved
+    parsed = parse 'app.A'
+    assertNullResultWithErrorAndWarnCalls calls, parsed
 
   test 'should handle missing any annotation in source', ->
     calls = arrangeErrorWarnCalls "Type 'app.A' annotation not found in file: 'app/a.js'."
     readFileSync = (file) -> """
       app.A = function(b, b) {}
     """
-    resolved = resolve 'app.A'
-    assertNullResultWithErrorAndWarnCalls calls, resolved
+    parsed = parse 'app.A'
+    assertNullResultWithErrorAndWarnCalls calls, parsed
 
   test 'should handle missing type annotation in source', ->
     calls = arrangeErrorWarnCalls "Type 'app.A' annotation not found in file: 'app/a.js'."
@@ -116,8 +115,8 @@ suite 'typeParser', ->
       var a;
       app.A = function(b, b) {}
     """
-    resolved = resolve 'app.A'
-    assertNullResultWithErrorAndWarnCalls calls, resolved
+    parsed = parse 'app.A'
+    assertNullResultWithErrorAndWarnCalls calls, parsed
 
   # NOTE: It seems impossible to break parser. I tried almost any wrong syntax.
   # test 'should handle doctrine parser error', ->
