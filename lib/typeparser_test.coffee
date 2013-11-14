@@ -62,7 +62,8 @@ suite 'typeParser', ->
   test 'should handle deps.js missing type definition', ->
     calls = arrangeErrorWarnCalls """
       Missing 'app.C' definition in deps.js file.
-      You probably forgot to write 'goog.provide('app.C');'.
+      1) Check Gruntfile's closure_dicontainer options resolve value.
+      2) Ensure if app.C was provided via goog.provide('app.C');.
     """
     parsed = parse 'app.C'
     assertNullResultWithErrorAndWarnCalls calls, parsed
