@@ -61,8 +61,7 @@ module.exports = (grunt) ->
 
       js: (filepath) ->
         grunt.config ['esteUnitTests', 'all', 'src'], filepath
-        # Because to test closure_dicontainer we need to reload task somehow,
-        # and loadTasks does not help.
+        # NOTE: Nodeunit can't be retested without restart.
         ['esteUnitTests']
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
@@ -72,15 +71,12 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-este-watch'
   grunt.loadTasks 'tasks'
 
-  grunt.registerTask 'default', ['build', 'esteUnitTests', 'run']
-  grunt.registerTask 'build', ['clean', 'coffee']
-  grunt.registerTask 'run', ['esteWatch']
-
-  grunt.registerTask 'test', [
-    'build'
+  grunt.registerTask 'default', ['build', 'run']
+  grunt.registerTask 'build', [
+    'clean'
+    'coffee'
     'esteUnitTests'
     'closure_dicontainer'
     'nodeunit'
   ]
-
-  grunt.registerTask 'loadTasks', 'Need to load tasks after build', ->
+  grunt.registerTask 'run', ['esteWatch']
