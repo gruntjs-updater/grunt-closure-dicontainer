@@ -80,6 +80,10 @@ app.start = function(data) {
 goog.exportSymbol('app.start', app.start);
 ```
 
+## Inspiration
+  - [Dependency Injection in .NET](http://www.manning.com/seemann)
+  - [ayende.com/blog/2887/dependency-injection-doesnt-cut-it-anymore](http://ayende.com/blog/2887/dependency-injection-doesnt-cut-it-anymore)
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
