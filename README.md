@@ -26,61 +26,59 @@ In your project's Gruntfile, add a section named `closure_dicontainer` to the da
 ```js
 grunt.initConfig({
   closure_dicontainer: {
-    options: {
-      // Task-specific options go here.
-    },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
-  },
+    app: {
+      options: {
+        resolve: ['app.A']
+      },
+      files: {
+        'client/app/js/dicontainer.js': 'client/deps.js'
+      }
+    }
+  }
 })
 ```
 
 ### Options
 
-#### options.separator
+#### options.name
 Type: `String`
-Default value: `',  '`
+Default value: `app.DiContainer`
 
-A string value that is used to do something with whatever.
+Generated DI container name. You have to require it in your app.
+```goog.require('app.DiContainer');```
 
-#### options.punctuation
+#### options.prefix
 Type: `String`
-Default value: `'.'`
+Default value: `../../../../`
 
-A string value that is used to do something else with whatever else.
+Prefix for `deps.js`.
+
+#### options.resolve
+Type: `Array.<string>`
+Default value: `['este.App']`
+
+Array of types to be resolved. For each type factory with the same name is
+creted as instance method in DI container class.
 
 ### Usage Examples
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+How to use DI container in you app.
 
 ```js
-grunt.initConfig({
-  closure_dicontainer: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
+goog.provide('app.start');
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+goog.require('app.DiContainer');
 
-```js
-grunt.initConfig({
-  closure_dicontainer: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
+/**
+ * @param {Object} data Server side data.
+ */
+app.start = function(data) {
+  var container = new app.DiContainer(data);
+  // Resolve all dependencies.
+  container.esteApp();
+};
+
+goog.exportSymbol('app.start', app.start);
 ```
 
 ## Contributing
