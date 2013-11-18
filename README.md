@@ -28,7 +28,7 @@ grunt.initConfig({
   closure_dicontainer: {
     app: {
       options: {
-        resolve: ['app.A']
+        resolve: ['este.App']
       },
       files: {
         'client/app/js/dicontainer.js': 'client/deps.js'
@@ -42,27 +42,26 @@ grunt.initConfig({
 
 #### options.name
 Type: `String`
-Default value: `app.DiContainer`
+Default value: `'app.DiContainer'`
 
-Generated DI container name. You have to require it in your app.
-```goog.require('app.DiContainer');```
+Generated DI container name.
 
 #### options.prefix
 Type: `String`
-Default value: `../../../../`
+Default value: `'../../../../'`
 
-Prefix for `deps.js`.
+Prefix for `deps.js` processing.
 
 #### options.resolve
 Type: `Array.<string>`
 Default value: `['este.App']`
 
 Array of types to be resolved. For each type factory with the same name is
-creted as instance method in DI container class.
+created as instance method on DI container class.
 
 ### Usage Examples
 
-How to use DI container in you app.
+How to use DI container in you app:
 
 ```js
 goog.provide('app.start');
