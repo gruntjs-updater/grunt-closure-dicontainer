@@ -2,7 +2,7 @@ createBody = require './body'
 
 suite 'createBody', ->
 
-  diContainerClassName = null
+  diContainerName = null
   resolve = null
   types = null
   typeParser = null
@@ -11,7 +11,7 @@ suite 'createBody', ->
   resolved = null
 
   setup ->
-    diContainerClassName = 'app.DiContainer'
+    diContainerName = 'app.DiContainer'
     resolve = ['app.A']
     types =
       'app.A':
@@ -27,7 +27,7 @@ suite 'createBody', ->
     resolved = null
 
   resolveFactory = ->
-    factory = createBody diContainerClassName, resolve, typeParser, grunt
+    factory = createBody diContainerName, resolve, typeParser, grunt
     resolved = factory()
 
   arrangeErrorWarnCalls = (errorMessage) ->
@@ -51,9 +51,9 @@ suite 'createBody', ->
        * @return {app.A}
        */
       app.DiContainer.prototype.appA = function() {
-        var appB = new app.B;
-        var appA = new app.A(appB);
-        return appA;
+        this.appB = new app.B;
+        this.appA = new app.A(this.appB);
+        return this.appA;
       };
     """
 
@@ -66,9 +66,9 @@ suite 'createBody', ->
        * @return {app.A}
        */
       app.DiContainer.prototype.appA = function() {
-        var appB = new app.B;
-        var appA = new app.A(appB, appB);
-        return appA;
+        this.appB = new app.B;
+        this.appA = new app.A(this.appB, this.appB);
+        return this.appA;
       };
     """
 
@@ -85,7 +85,7 @@ suite 'createBody', ->
        * @return {app.iAmNotExists}
        */
       app.DiContainer.prototype.appIAmNotExists = function() {
-        return appIAmNotExists;
+        return this.appIAmNotExists;
       };
     """
 

@@ -14,16 +14,16 @@ module.exports = (grunt) ->
 
     options = @options
 
-      # DI container factory name.
-      # Remember to require it in app.start: goog.require('app.diContainer');
-      factoryName: 'app.diContainer'
+      # DI container name. Remember to require it in app.start:
+      # goog.require('app.DiContainer');
+      name: 'app.DiContainer'
 
       prefix: '../../../../'
 
       # Default config. Can be overriden with app.diContainer factory.
-      config:
-        app:
-          id: 'este-app'
+      # config:
+      #   app:
+      #     id: 'este-app'
 
       # Example: app.diContainer(config).esteApp().start()
       resolve: ['este.App']
@@ -45,7 +45,7 @@ module.exports = (grunt) ->
       container = dicontainer options, deps, grunt
       return if @errorCount
       grunt.file.write file.dest, container.code
-      updateDeps file, container.required, options.prefix, options.factoryName
+      updateDeps file, container.required, options.prefix, options.name
       grunt.log.writeln "File \"#{file.dest}\" created."
 
   getDeps = (file) ->
@@ -68,12 +68,12 @@ module.exports = (grunt) ->
   unrelativize = (file) ->
     file.replace /\.\.\//g, ''
 
-  updateDeps = (file, required, prefix, factoryName) ->
+  updateDeps = (file, required, prefix, name) ->
     depsPath = file.src[0]
     src = grunt.file.read depsPath
     line = [
       "goog.addDependency('#{prefix}#{file.dest}', "
-      "['#{factoryName}'], "
+      "['#{name}'], "
       "['#{required.join '\', \''}']);"
     ].join ''
     return if src.indexOf(line) > -1

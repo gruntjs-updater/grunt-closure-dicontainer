@@ -1,4 +1,4 @@
-module.exports = (diContainerClassName, resolve, typeParser, grunt) ->
+module.exports = (diContainerName, resolve, typeParser, grunt) ->
 
   ->
     required = []
@@ -11,7 +11,7 @@ module.exports = (diContainerClassName, resolve, typeParser, grunt) ->
          * Factory for #{type}.
          * @return {#{type}}
          */
-        #{diContainerClassName}.prototype.#{camelizeType type} = function() {
+        #{diContainerName}.prototype.#{camelize type} = function() {
           #{createFactoryBody type}
         };
       """
@@ -40,16 +40,19 @@ module.exports = (diContainerClassName, resolve, typeParser, grunt) ->
           walk argument, resolving.slice 0
 
         args = createArguments definition.arguments
-        lines.push "var #{camelizeType type} = new #{type}#{args};"
+        lines.push "this.#{camelize type} = new #{type}#{args};"
 
       walk type, []
 
-      lines.push "return #{camelizeType type};"
+      lines.push "return this.#{camelize type};"
       lines.join '\n  '
 
     createArguments = (args) ->
       return '' if !args.length
-      "(#{(camelizeType arg for arg in args).join ', '})"
+      strArgs = (for arg in args
+        "this.#{camelize arg}"
+      ).join ', '
+      "(#{strArgs})"
 
     for type in resolve
       src += createFactory type
@@ -61,7 +64,7 @@ module.exports = (diContainerClassName, resolve, typeParser, grunt) ->
   @param {string} type For example: foo.bla.Bar
   @return {string} For example: fooBlaBar
 ###
-camelizeType = (type) ->
+camelize = (type) ->
   camelized = ''
   for chunk, i in type.split '.'
     if i
