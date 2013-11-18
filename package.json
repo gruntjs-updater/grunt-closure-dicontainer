@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "DI Container for Google Closure with automatic registration and strongly typed object graph resolving.",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt build"
   },
   "homepage": "https://github.com/steida/grunt-closure-dicontainer",
   "author": {
