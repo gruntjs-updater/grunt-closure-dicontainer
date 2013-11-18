@@ -34,10 +34,3 @@ exports.closure_dicontainer =
     # console.log diff
     test.equal actual, expected
     test.done()
-
-  # custom_options: (test) ->
-  #   test.expect 1
-  #   actual = grunt.file.read 'tmp/custom_options_dicontainer.js'
-  #   expected = grunt.file.read 'test/expected/custom_options_dicontainer.js'
-  #   test.equal actual, expected, 'should describe what the custom option(s) behavior is.'
-  #   test.done()
