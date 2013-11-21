@@ -2,6 +2,8 @@
 [![Build Status](https://secure.travis-ci.org/steida/grunt-closure-dicontainer.png?branch=master)](http://travis-ci.org/steida/grunt-closure-dicontainer) [![Dependency Status](https://david-dm.org/steida/grunt-closure-dicontainer.png)](https://david-dm.org/steida/grunt-closure-dicontainer) [![devDependency Status](https://david-dm.org/steida/grunt-closure-dicontainer/dev-status.png)](https://david-dm.org/steida/grunt-closure-dicontainer#info=devDependencies)
 
 > DI Container for Google Closure with automatic registration and strongly typed object graph resolving.
+> WARNING: This is just an experiment, do not use it.
+
 
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
