@@ -50,7 +50,7 @@ suite 'createBody', ->
        * Factory for app.A.
        * @return {app.A}
        */
-      app.DiContainer.prototype.appA = function() {
+      app.DiContainer.prototype.resolveAppA = function() {
         this.appB = new app.B;
         this.appA = new app.A(this.appB);
         return this.appA;
@@ -65,7 +65,7 @@ suite 'createBody', ->
        * Factory for app.A.
        * @return {app.A}
        */
-      app.DiContainer.prototype.appA = function() {
+      app.DiContainer.prototype.resolveAppA = function() {
         this.appB = new app.B;
         this.appA = new app.A(this.appB, this.appB);
         return this.appA;
@@ -84,7 +84,7 @@ suite 'createBody', ->
        * Factory for app.iAmNotExists.
        * @return {app.iAmNotExists}
        */
-      app.DiContainer.prototype.appIAmNotExists = function() {
+      app.DiContainer.prototype.resolveAppIAmNotExists = function() {
         return this.appIAmNotExists;
       };
     """

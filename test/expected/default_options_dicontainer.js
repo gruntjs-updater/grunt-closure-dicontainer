@@ -2,8 +2,8 @@
 // Please do not edit.
 goog.provide('app.DiContainer');
 
-goog.require('este.App');
-goog.require('este.Router');
+goog.require('App');
+goog.require('app.Router');
 
 /**
  * @param {Object=} data Server side data.
@@ -20,11 +20,11 @@ app.DiContainer = function(data) {
 app.DiContainer.prototype.data = null;
 
 /**
- * Factory for este.App.
- * @return {este.App}
+ * Factory for App.
+ * @return {App}
  */
-app.DiContainer.prototype.esteApp = function() {
-  this.esteRouter = new este.Router;
-  this.esteApp = new este.App(this.esteRouter);
-  return this.esteApp;
+app.DiContainer.prototype.resolveApp = function() {
+  this.appRouter = new app.Router;
+  this.App = new App(this.appRouter);
+  return this.App;
 };

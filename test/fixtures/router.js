@@ -1,6 +1,6 @@
-goog.provide('este.Router');
+goog.provide('app.Router');
 
 /**
  * @constructor
  */
-este.Router = function() {};
+app.Router = function() {};

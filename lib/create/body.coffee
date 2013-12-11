@@ -11,7 +11,7 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
          * Factory for #{type}.
          * @return {#{type}}
          */
-        #{diContainerName}.prototype.#{camelize type} = function() {
+        #{diContainerName}.prototype.resolve#{uppercaseFirstChar camelize type} = function() {
           #{createFactoryBody type}
         };
       """
@@ -61,8 +61,8 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
     src: src
 
 ###*
-  @param {string} type For example: foo.bla.Bar
-  @return {string} For example: fooBlaBar
+  @param {string} type foo.bla.Bar
+  @return {string} fooBlaBar
 ###
 camelize = (type) ->
   camelized = ''
@@ -72,6 +72,13 @@ camelize = (type) ->
     else
       camelized += chunk
   camelized
+
+###*
+  @param {string} string fooBlaBar
+  @return {string} FooBlaBar
+###
+uppercaseFirstChar = (string) ->
+  string.charAt(0).toUpperCase() + string.slice 1
 
 fail = (grunt, message) ->
   grunt.log.error message

@@ -8,9 +8,11 @@ module.exports = (deps, readFileSync, grunt) ->
 
     if !file
       fail grunt, """
-        Missing '#{type}' definition in deps.js file.
-        1) Check Gruntfile's closure_dicontainer options resolve value.
-        2) Ensure if #{type} was provided via goog.provide('#{type}');.
+        Missing '#{type}' in deps.js.
+
+        1) Does that type exists?
+        2) Was provided via goog.provide('#{type}');?
+        3) Is registered in Gruntfile? Check closure_dicontainer resolve options.
       """
       return null
 

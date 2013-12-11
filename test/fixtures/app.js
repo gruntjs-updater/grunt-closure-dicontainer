@@ -1,7 +1,7 @@
-goog.provide('este.App');
+goog.provide('App');
 
 /**
- * @param {este.Router} router
+ * @param {app.Router} router
  * @constructor
  */
-este.App = function(router) {};
+App = function(router) {};
