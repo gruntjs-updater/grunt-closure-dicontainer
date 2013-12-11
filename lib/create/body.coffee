@@ -3,7 +3,7 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
   ->
     required = []
     src = ''
-    # TODO: typeParser cache for all
+    # TODO: TypeParser cache (only for one run).
 
     createFactory = (type) ->
       """
@@ -33,7 +33,7 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
         # TODO: When transient, prevent repeated types in array.
         required.push type
 
-        definition = typeParser type
+        definition = typeParser type, resolving
         return if !definition
 
         for argument in definition.arguments

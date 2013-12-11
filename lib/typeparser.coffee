@@ -3,16 +3,15 @@ doctrine = require 'doctrine'
 
 module.exports = (deps, readFileSync, grunt) ->
 
-  (type) ->
+  (type, resolving) ->
     file = deps[type]
 
     if !file
       fail grunt, """
-        Missing '#{type}' in deps.js.
+        Missing '#{type}' in deps.js when resolving '#{resolving.join '\' then \''}'.
+        Didn't you forget to provide type?
 
-        1) Does that type exists?
-        2) Was provided via goog.provide('#{type}');?
-        3) Is registered in Gruntfile? Check closure_dicontainer resolve options.
+        goog.provide('#{type}');
       """
       return null
 
@@ -67,9 +66,13 @@ stripCodeAfterAnnotation = (src, typeIndex) ->
 
 getArguments = (annotation) ->
   parsed = doctrine.parse "/*#{annotation}*/", unwrap: true
-  for tag in parsed.tags
+  fok = for tag in parsed.tags
     continue if tag.title != 'param'
-    tag.type.name
+    continue if tag.type.type == 'OptionalType'
+    if tag.type.type == 'NonNullableType'
+      tag.type.expression.name
+    else
+      tag.type.name
 
 fail = (grunt, message) ->
   grunt.log.error message

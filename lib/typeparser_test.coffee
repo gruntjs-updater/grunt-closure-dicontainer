@@ -27,13 +27,29 @@ suite 'typeParser', ->
            */
           var B = function() {}
         """
+
+        'app/c.js': """
+          /**
+           * @param {Foo=} foo
+           * @constructor
+           */
+          app.C = function(foo) {}
+        """
+
+        'app/d.js': """
+          /**
+           * @param {!Foo} foo
+           * @constructor
+           */
+          app.D = function(foo) {}
+        """
       sources[file]
     grunt =
       log: error: ->
       fail: warn: ->
 
-  parse = (type) ->
-    typeParser(deps, readFileSync, grunt) type
+  parse = (type, resolving) ->
+    typeParser(deps, readFileSync, grunt) type, resolving
 
   arrangeErrorWarnCalls = (errorMessage) ->
     calls = ''
@@ -61,13 +77,12 @@ suite 'typeParser', ->
 
   test 'should handle deps.js missing type definition', ->
     calls = arrangeErrorWarnCalls """
-      Missing 'app.C' in deps.js.
+      Missing 'app.C' in deps.js when resolving 'foo' then 'bla'.
+      Didn't you forget to provide type?
 
-      1) Does that type exists?
-      2) Was provided via goog.provide('app.C');?
-      3) Is registered in Gruntfile? Check closure_dicontainer resolve options.
+      goog.provide('app.C');
     """
-    parsed = parse 'app.C'
+    parsed = parse 'app.C', ['foo', 'bla']
     assertNullResultWithErrorAndWarnCalls calls, parsed
 
   test 'should handle missing file', ->
@@ -120,3 +135,15 @@ suite 'typeParser', ->
     """
     parsed = parse 'app.A'
     assertNullResultWithErrorAndWarnCalls calls, parsed
+
+  test 'should ignore optional types', ->
+    deps['app.C'] = 'app/c.js'
+    parsed = parse 'app.C'
+    assert.deepEqual parsed,
+      arguments: []
+
+  test 'should handle NonNullableType types', ->
+    deps['app.D'] = 'app/d.js'
+    parsed = parse 'app.D'
+    assert.deepEqual parsed,
+      arguments: ['Foo']
