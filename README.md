@@ -40,7 +40,7 @@ grunt.initConfig({
         prefix: '../../../../'
       },
       files: {
-        'client/app/js/dicontainer.js': 'client/deps.js'
+        'client/app/build/dicontainer.js': 'client/deps.js'
       }
     }
   }
