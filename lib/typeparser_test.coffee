@@ -9,13 +9,13 @@ suite 'typeParser', ->
   setup ->
     deps =
       'app.A': 'app/a.js'
-      'app.B': 'app/b.js'
+      'B': 'app/b.js'
     readFileSync = (file) ->
       sources =
         'app/a.js': """
           /**
-           * @param {app.B} B
-           * @param {app.B} B
+           * @param {B} B
+           * @param {B} B
            * @constructor
            */
           app.A = function(b, b) {}
@@ -25,7 +25,7 @@ suite 'typeParser', ->
           /**
            * @constructor
            */
-          app.B = function() {}
+          var B = function() {}
         """
       sources[file]
     grunt =
@@ -52,10 +52,10 @@ suite 'typeParser', ->
   test 'should parse app.A', ->
     parsed = parse 'app.A'
     assert.deepEqual parsed,
-      arguments: ['app.B', 'app.B']
+      arguments: ['B', 'B']
 
-  test 'should parse app.B', ->
-    parsed = parse 'app.B'
+  test 'should parse B', ->
+    parsed = parse 'B'
     assert.deepEqual parsed,
       arguments: []
 
@@ -80,8 +80,8 @@ suite 'typeParser', ->
     calls = arrangeErrorWarnCalls "Type 'app.A' definition not found in file: 'app/a.js'."
     readFileSync = (file) -> """
       /**
-       * @param {app.B} B
-       * @param {app.B} B
+       * @param {B} B
+       * @param {B} B
        * @constructor
        */
       fok.A = function(b, b) {}
@@ -120,6 +120,3 @@ suite 'typeParser', ->
     """
     parsed = parse 'app.A'
     assertNullResultWithErrorAndWarnCalls calls, parsed
-
-  # NOTE: It seems impossible to break parser. I tried almost any wrong syntax.
-  # test 'should handle doctrine parser error', ->

@@ -35,10 +35,10 @@ getAnnotation = (file, src, type, grunt) ->
     fail grunt, "Type '#{type}' definition not found in file: '#{file}'."
     return
 
-  srcWhereLastCommentIsTypeAnnotation = src.slice 0, typeIndex
+  src = stripCodeAfterAnnotation src, typeIndex
 
   try
-    syntax = esprima.parse srcWhereLastCommentIsTypeAnnotation,
+    syntax = esprima.parse src,
       range: true
       comment: true
       tokens: true
@@ -59,6 +59,11 @@ getAnnotation = (file, src, type, grunt) ->
     return
 
   lastComment.value
+
+stripCodeAfterAnnotation = (src, typeIndex) ->
+  src = src.slice 0, typeIndex
+  # For types without namespace.
+  src.replace /var\s+$/g, ''
 
 getArguments = (annotation) ->
   parsed = doctrine.parse "/*#{annotation}*/", unwrap: true

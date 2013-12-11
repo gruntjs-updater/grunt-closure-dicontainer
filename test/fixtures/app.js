@@ -4,4 +4,4 @@ goog.provide('App');
  * @param {app.Router} router
  * @constructor
  */
-App = function(router) {};
+var App = function(router) {};
