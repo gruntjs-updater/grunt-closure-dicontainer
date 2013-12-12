@@ -73,16 +73,19 @@ module.exports = (grunt) ->
         # NOTE: Nodeunit can't be retested without restart.
         ['esteUnitTests']
 
-    release:
+    bump:
       options:
-        npm: false
+        commitFiles: ['-a']
+        files: ['bower.json', 'package.json']
+        pushTo: 'origin'
+        tagName: '%VERSION%'
 
+  grunt.loadNpmTasks 'grunt-bump'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-nodeunit'
   grunt.loadNpmTasks 'grunt-este'
   grunt.loadNpmTasks 'grunt-este-watch'
-  grunt.loadNpmTasks 'grunt-release'
   grunt.loadTasks 'tasks'
 
   grunt.registerTask 'default', ['build', 'run']

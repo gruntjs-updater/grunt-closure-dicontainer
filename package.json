@@ -32,14 +32,14 @@
     "doctrine": "~0.1.0"
   },
   "devDependencies": {
+    "difflet": "~0.2.6",
     "grunt": "~0.4.1",
+    "grunt-bump": "0.0.13",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-este": "~2.4.0",
-    "grunt-este-watch": "~0.1.10",
-    "difflet": "~0.2.6",
-    "grunt-release": "~0.6.0"
+    "grunt-este-watch": "~0.1.10"
   },
   "peerDependencies": {
     "grunt": "~0.4.1"
