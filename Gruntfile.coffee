@@ -7,6 +7,7 @@ module.exports = (grunt) ->
         force: true
       all:
         src: [
+          'bower_components/este-library/este/**/*.{js,css}'
           '{lib,tasks}/**/*.js'
           'test/*.js'
           'tmp'
