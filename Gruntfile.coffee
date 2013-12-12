@@ -18,9 +18,26 @@ module.exports = (grunt) ->
       all:
         files: [
           expand: true
-          src: '{lib,tasks,test}/**/*.coffee'
+          src: [
+            '{lib,tasks,test}/**/*.coffee'
+             'bower_components/este-library/este/**/*.coffee'
+          ]
           ext: '.js'
         ]
+
+    coffee2closure:
+      all:
+        files: '<%= coffee.all.files %>'
+
+    esteDeps:
+      all:
+        options:
+          outputFile: 'client/deps.js'
+          prefix: '../../../../'
+          root: [
+            'bower_components/closure-library'
+            'bower_components/este-library/este'
+          ]
 
     esteUnitTests:
       all:
@@ -47,9 +64,11 @@ module.exports = (grunt) ->
       coffee: (filepath) ->
         files = [src: filepath, ext: '.js', expand: true]
         grunt.config ['coffee', 'all', 'files'], files
+        grunt.config ['coffee2closure', 'all', 'files'], files
         ['coffee:all']
 
       js: (filepath) ->
+        grunt.config ['esteDeps', 'all', 'src'], filepath
         grunt.config ['esteUnitTests', 'all', 'src'], filepath
         # NOTE: Nodeunit can't be retested without restart.
         ['esteUnitTests']
@@ -70,6 +89,8 @@ module.exports = (grunt) ->
   grunt.registerTask 'build', [
     'clean'
     'coffee'
+    'coffee2closure'
+    'esteDeps'
     'esteUnitTests'
     'closure_dicontainer'
     'nodeunit'
