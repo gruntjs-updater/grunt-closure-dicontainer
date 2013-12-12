@@ -6,18 +6,9 @@ goog.require('App');
 goog.require('app.Router');
 
 /**
- * @param {Object=} data Server side data.
  * @constructor
  */
-app.DiContainer = function(data) {
-  if (data)
-    this.data = data;
-};
-
-/**
- * @type {Object}
- */
-app.DiContainer.prototype.data = null;
+app.DiContainer = function() {};
 
 /**
  * Factory for App.

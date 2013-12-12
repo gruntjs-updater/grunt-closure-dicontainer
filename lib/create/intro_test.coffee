@@ -20,16 +20,7 @@ suite 'createIntro', ->
       goog.require('Foo');
 
       /**
-       * @param {Object=} data Server side data.
        * @constructor
        */
-      app.DiContainer = function(data) {
-        if (data)
-          this.data = data;
-      };
-
-      /**
-       * @type {Object}
-       */
-      app.DiContainer.prototype.data = null;
+      app.DiContainer = function() {};
     """

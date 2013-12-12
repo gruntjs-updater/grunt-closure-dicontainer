@@ -15,16 +15,7 @@ module.exports = (diContainerName) ->
       #{requiredNamespaces.map(createGoogRequire).join '\n'}
 
       /**
-       * @param {Object=} data Server side data.
        * @constructor
        */
-      #{diContainerName} = function(data) {
-        if (data)
-          this.data = data;
-      };
-
-      /**
-       * @type {Object}
-       */
-      #{diContainerName}.prototype.data = null;
+      #{diContainerName} = function() {};
     """
