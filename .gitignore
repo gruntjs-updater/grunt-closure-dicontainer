@@ -1,7 +1,9 @@
 grunt-closure-dicontainer.sublime-workspace
 node_modules
+bower_components
 npm-debug.log
 tmp
 lib/**/*.js
 tasks/*.js
 test/*.js
+client/deps.js
