@@ -95,6 +95,8 @@ app.main = function(data) {
 goog.exportSymbol('app.main', app.main);
 ```
 
+Soon it will be available in [Este](http://github.com/steida/este). Stay tuned.
+
 ## Inspiration
   - [Dependency Injection in .NET](http://www.manning.com/seemann)
   - [ayende.com/blog/2887/dependency-injection-doesnt-cut-it-anymore](http://ayende.com/blog/2887/dependency-injection-doesnt-cut-it-anymore)
