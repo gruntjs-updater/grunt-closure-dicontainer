@@ -64,7 +64,7 @@ Generated DI container name.
 
 #### options.resolve
 Type: `Array.<string>`
-Default value: `['este.App']`
+Default value: `['App']`
 
 Array of types to be resolved.
 
