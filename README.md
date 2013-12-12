@@ -47,7 +47,7 @@ grunt.initConfig({
 })
 ```
 
-# DI container name. Remember to require it in app.start:
+# DI container name. Remember to require it in app.main:
 
 
 ### Options
@@ -76,20 +76,20 @@ created as instance method on DI container class.
 How to use DI container in you app:
 
 ```js
-goog.provide('app.start');
+goog.provide('app.main');
 
 goog.require('app.DiContainer');
 
 /**
  * @param {Object} data Server side data.
  */
-app.start = function(data) {
+app.main = function(data) {
   var container = new app.DiContainer(data);
   // Resolve all dependencies.
   container.esteApp();
 };
 
-goog.exportSymbol('app.start', app.start);
+goog.exportSymbol('app.main', app.main);
 ```
 
 ## Inspiration
