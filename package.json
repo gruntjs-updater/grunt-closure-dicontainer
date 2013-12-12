@@ -29,14 +29,14 @@
   "dependencies": {
     "di": "0.0.1",
     "esprima": "~1.0.4",
-    "doctrine": "0.0.5"
+    "doctrine": "~0.1.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-nodeunit": "~0.2.0",
-    "grunt-este": "~2.3.10",
+    "grunt-este": "~2.4.0",
     "grunt-este-watch": "~0.1.10",
     "difflet": "~0.2.6",
     "grunt-release": "~0.6.0"
