@@ -66,7 +66,7 @@ stripCodeAfterAnnotation = (src, typeIndex) ->
 
 getArguments = (annotation) ->
   parsed = doctrine.parse "/*#{annotation}*/", unwrap: true
-  fok = for tag in parsed.tags
+  for tag in parsed.tags
     continue if tag.title != 'param'
     continue if tag.type.type == 'OptionalType'
     if tag.type.type == 'NonNullableType'
