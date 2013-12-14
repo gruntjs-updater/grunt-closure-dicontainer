@@ -22,5 +22,36 @@ suite 'intro', ->
       /**
        * @constructor
        */
-      app.DiContainer = function() {};
+      app.DiContainer = function() {
+        this.rules = [];
+      };
+
+      /**
+       * Resolving rules for DI Container.
+       * - resolve: Type or array of types going to be resolved.
+       * - as: Which type should be returned instead.
+       * - with: Named values for arguments we know in runtime therefore have
+       *      to be configured in runtime too.
+       * - by: A factory method for custom resolving.
+       * @typedef {{
+       *   resolve: (Object),
+       *   as: (Object|undefined),
+       *   with: (Object|undefined),
+       *   by: (Function|undefined)
+       * }}
+       */
+      app.DiContainer.Rule;
+
+      /**
+       * @type {Array.<app.DiContainer.Rule>}
+       * @protected
+       */
+      app.DiContainer.prototype.rules;
+
+      /**
+       * @param {Array.<app.DiContainer.Rule>} rules
+       */
+      app.DiContainer.prototype.configure = function(rules) {
+        this.rules.push.apply(this.rules, rules);
+      };
     """

@@ -17,5 +17,36 @@ module.exports = (diContainerName) ->
       /**
        * @constructor
        */
-      #{diContainerName} = function() {};
+      #{diContainerName} = function() {
+        this.rules = [];
+      };
+
+      /**
+       * Resolving rules for DI Container.
+       * - resolve: Type or array of types going to be resolved.
+       * - as: Which type should be returned instead.
+       * - with: Named values for arguments we know in runtime therefore have
+       *      to be configured in runtime too.
+       * - by: A factory method for custom resolving.
+       * @typedef {{
+       *   resolve: (Object),
+       *   as: (Object|undefined),
+       *   with: (Object|undefined),
+       *   by: (Function|undefined)
+       * }}
+       */
+      #{diContainerName}.Rule;
+
+      /**
+       * @type {Array.<#{diContainerName}.Rule>}
+       * @protected
+       */
+      #{diContainerName}.prototype.rules;
+
+      /**
+       * @param {Array.<#{diContainerName}.Rule>} rules
+       */
+      #{diContainerName}.prototype.configure = function(rules) {
+        this.rules.push.apply(this.rules, rules);
+      };
     """
