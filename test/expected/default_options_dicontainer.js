@@ -19,3 +19,18 @@ app.DiContainer.prototype.resolveApp = function() {
   this.App = new App(this.appRouter);
   return this.App;
 };
+
+/**
+ * NOTE: Do not optimize it without dead code removal etc. check.
+ * @protected
+ */
+app.DiContainer.prototype.getRuleFor = function(type) {
+  var rule;
+  for (var i = 0; i < this.rules.length; i++) {
+    rule = this.rules[i];
+    if (rule.resolve == type) break;
+  }
+  rule = rule || {};
+  rule['with'] = rule['with'] || {};
+  return rule;
+};

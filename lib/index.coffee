@@ -13,6 +13,7 @@ module.exports = (options, deps, grunt) ->
     create: ['factory', require './create']
     createBody: ['factory', require './create/body']
     createIntro: ['factory', require './create/intro']
+    createOutro: ['factory', require './create/outro']
     deps: ['value', deps]
     diContainerName: ['value', options.name]
     grunt: ['value', grunt]
