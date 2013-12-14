@@ -1,6 +1,6 @@
-createBody = require './body'
+body = require './body'
 
-suite 'createBody', ->
+suite 'body', ->
 
   diContainerName = null
   resolve = null
@@ -27,7 +27,7 @@ suite 'createBody', ->
     resolved = null
 
   resolveFactory = ->
-    factory = createBody diContainerName, resolve, typeParser, grunt
+    factory = body diContainerName, resolve, typeParser, grunt
     resolved = factory()
 
   arrangeErrorWarnCalls = (errorMessage) ->
