@@ -15,8 +15,8 @@ suite 'body', ->
     resolve = ['app.A']
     types =
       'app.A':
-        arguments: ['app.B']
-      'app.B':
+        arguments: ['B']
+      'B':
         arguments: []
     typeParser = (type) ->
       types[type]
@@ -45,58 +45,70 @@ suite 'body', ->
 
   test 'should resolve dependencies', ->
     resolveFactory()
+
     assert.equal resolved.src, """
       /**
-       * Factory for app.A.
+       * Factory for 'app.A'.
        * @return {app.A}
        */
       app.DiContainer.prototype.resolveAppA = function() {
-        this.appB = new app.B;
-        this.appA = new app.A(this.appB);
+        this.appA = this.appA || new app.A(
+          this.resolveB();
+        );
         return this.appA;
       };
-    """
 
-  test 'should return the same instance', ->
-    types['app.A'] = arguments: ['app.B', 'app.B']
-    resolveFactory()
-    assert.equal resolved.src, """
       /**
-       * Factory for app.A.
-       * @return {app.A}
+       * @return {B}
+       * @private
        */
-      app.DiContainer.prototype.resolveAppA = function() {
-        this.appB = new app.B;
-        this.appA = new app.A(this.appB, this.appB);
-        return this.appA;
+      app.DiContainer.prototype.resolveB = function() {
+        this.b = this.b || new B;
+        return this.b;
       };
     """
 
   test 'should create required', ->
     resolveFactory()
-    assert.deepEqual resolved.required, ['app.A', 'app.B']
+    assert.deepEqual resolved.required, ['app.A', 'B']
+
+  test 'should create unique required', ->
+    types =
+      'app.A':
+        arguments: ['B', 'B']
+      'B':
+        arguments: []
+    resolveFactory()
+    assert.deepEqual resolved.required, ['app.A', 'B']
 
   test 'should do not generate code for missing type definition', ->
     resolve = ['app.iAmNotExists']
     resolveFactory()
-    assert.equal resolved.src, """
-      /**
-       * Factory for app.iAmNotExists.
-       * @return {app.iAmNotExists}
-       */
-      app.DiContainer.prototype.resolveAppIAmNotExists = function() {
-        return this.appIAmNotExists;
-      };
-    """
+    assert.equal resolved.src, ""
 
-  test 'should handle circular dependency', ->
+  test 'should detect circular dependency', ->
     calls = arrangeErrorWarnCalls """
-      Can not resolve circular dependency: app.A -> app.B -> app.A.
+      Can't create 'app.A' as it has circular dependency: app.A -> B -> app.A.
     """
     types =
       'app.A':
-        arguments: ['app.B']
-      'app.B':
+        arguments: ['B']
+      'B':
         arguments: ['app.A']
+    resolveFactory()
+    assertErrorAndWarnCalls calls
+
+  test 'should detect wrong usage', ->
+    calls = arrangeErrorWarnCalls """
+      Wrong DI container usage detected. Don't use DI container as service locator.
+      The only place where DI container should be used is composition root.
+      blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern.
+      blog.ploeh.dk/2011/07/28/CompositionRoot
+    """
+    types =
+      'app.A':
+        arguments: ['app.DiContainer']
+      'app.DiContainer':
+        arguments: []
     resolveFactory()
     assertErrorAndWarnCalls calls

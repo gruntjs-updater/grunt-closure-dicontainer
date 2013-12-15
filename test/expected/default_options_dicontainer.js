@@ -42,13 +42,23 @@ app.DiContainer.prototype.configure = function(rules) {
 };
 
 /**
- * Factory for App.
+ * Factory for 'App'.
  * @return {App}
  */
 app.DiContainer.prototype.resolveApp = function() {
-  this.appRouter = new app.Router;
-  this.App = new App(this.appRouter);
-  return this.App;
+  this.app = this.app || new App(
+    this.resolveAppRouter();
+  );
+  return this.app;
+};
+
+/**
+ * @return {app.Router}
+ * @private
+ */
+app.DiContainer.prototype.resolveAppRouter = function() {
+  this.appRouter = this.appRouter || new app.Router;
+  return this.appRouter;
 };
 
 /**
