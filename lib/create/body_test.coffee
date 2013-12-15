@@ -18,6 +18,9 @@ suite 'body', ->
         arguments: [
           name: 'b'
           type: 'B'
+        ,
+          name: 'bb'
+          type: 'B'
         ]
       'B':
         arguments: []
@@ -54,8 +57,18 @@ suite 'body', ->
        * @return {app.A}
        */
       app.DiContainer.prototype.resolveAppA = function() {
+        var rule = /** @type {{
+          resolve: (Object),
+          as: (Object|undefined),
+          with: ({
+            b: (B|undefined)
+            bb: (B|undefined)
+          }),
+          by: (Function|undefined)
+        }} */ (this.getRuleFor(app.A));
         this.appA = this.appA || new app.A(
-          this.resolveB();
+          rule.with.b || this.resolveB(),
+          rule.with.bb || this.resolveB()
         );
         return this.appA;
       };
@@ -65,6 +78,11 @@ suite 'body', ->
        * @private
        */
       app.DiContainer.prototype.resolveB = function() {
+        var rule = /** @type {{
+          resolve: (Object),
+          as: (Object|undefined),
+          by: (Function|undefined)
+        }} */ (this.getRuleFor(B));
         this.b = this.b || new B;
         return this.b;
       };

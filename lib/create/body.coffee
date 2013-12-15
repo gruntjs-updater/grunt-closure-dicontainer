@@ -6,18 +6,18 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
 
     for type in resolve
       do (type, resolving = []) ->
-        createPrivateFactory = !!resolving.length
-
         return if detectCircularDependency type, resolving, grunt
         return if detectWrongUsage type, diContainerName, resolving, grunt
+        return if required[type]
+
+        required[type] = true
+        resolving.push type
 
         definition = typeParser type, resolving
         return if !definition
 
         src.push createFactoryFor type, definition.arguments, diContainerName,
-          createPrivateFactory
-
-        required[type] = true
+          resolving.length > 1
 
         for argument in definition.arguments
           arguments.callee argument.type, resolving.slice 0
@@ -39,7 +39,6 @@ detectCircularDependency = (type, resolving, grunt) ->
       Can't create '#{type}' as it has circular dependency: #{dependency}.
     """
     return true
-  resolving.push type
   false
 
 ###*
@@ -68,6 +67,17 @@ detectWrongUsage = (type, diContainerName, resolving, grunt) ->
     service locator.
 ###
 createFactoryFor = (type, args, diContainerName, isPrivate) ->
+  _with = if args.length
+    lines = for arg in args
+      "#{arg.name}: (#{arg.type}|undefined)"
+    """
+    with: ({
+          #{lines.join '\n\n      '}
+        }),
+    """
+  else
+    ''
+
   src = """
     /**
      #{if !isPrivate then "* Factory for '#{type}'." else ''}
@@ -75,12 +85,18 @@ createFactoryFor = (type, args, diContainerName, isPrivate) ->
      #{if isPrivate then '* @private' else ''}
      */
     #{diContainerName}.prototype.resolve#{pascalize type} = function() {
+      var rule = /** @type {{
+        resolve: (Object),
+        as: (Object|undefined),
+        #{_with}
+        by: (Function|undefined)
+      }} */ (this.getRuleFor(#{type}));
       this.#{camelize type} = this.#{camelize type} || new #{type}#{factorize args};
       return this.#{camelize type};
     };
   """
   # Remove empty lines.
-  lines = (line for line in src.split '\n' when line != ' ')
+  lines = (line for line in src.split '\n' when line.trim())
   lines.join '\n'
 
 ###*
@@ -109,10 +125,12 @@ pascalize = (str) ->
 ###
 factorize = (args) ->
   return '' if !args.length
-  args = args.map (arg) -> "this.resolve#{pascalize arg.type}();"
+  lines = args.map (arg) ->
+    "rule.with.#{arg.name} || this.resolve#{pascalize arg.type}()"
+
   """
   (
-      #{args.join '\n\n'}
+      #{lines.join ',\n\n    '}
     )"""
 
 fail = (grunt, message) ->

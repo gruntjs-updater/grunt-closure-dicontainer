@@ -49,8 +49,16 @@ app.DiContainer.prototype.configure = function(rules) {
  * @return {App}
  */
 app.DiContainer.prototype.resolveApp = function() {
+  var rule = /** @type {{
+    resolve: (Object),
+    as: (Object|undefined),
+    with: ({
+      router: (app.Router|undefined)
+    }),
+    by: (Function|undefined)
+  }} */ (this.getRuleFor(App));
   this.app = this.app || new App(
-    this.resolveAppRouter();
+    rule.with.router || this.resolveAppRouter()
   );
   return this.app;
 };
@@ -60,6 +68,11 @@ app.DiContainer.prototype.resolveApp = function() {
  * @private
  */
 app.DiContainer.prototype.resolveAppRouter = function() {
+  var rule = /** @type {{
+    resolve: (Object),
+    as: (Object|undefined),
+    by: (Function|undefined)
+  }} */ (this.getRuleFor(app.Router));
   this.appRouter = this.appRouter || new app.Router;
   return this.appRouter;
 };
