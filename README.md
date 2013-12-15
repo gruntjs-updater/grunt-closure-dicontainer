@@ -5,10 +5,9 @@
 
 - concise api
 - automatic registration
-- resolving based on strong types
-- configurable
-- no magic, you can check generated source code easily
-
+- resolving based on types
+- run-time configuration
+- advanced mode compilation friendly
 
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
@@ -74,7 +73,7 @@ Default value: `'../../../../'`
 
 Prefix for `deps.js` processing.
 
-### Usage Examples
+### Usage Example
 
 How to use DI container in you app:
 
@@ -95,16 +94,13 @@ app.main = function(data) {
 goog.exportSymbol('app.main', app.main);
 ```
 
-Soon it will be available in [Este](http://github.com/steida/este). Stay tuned.
+Available in [Este](http://github.com/steida/este) soon. Stay tuned.
 
-## Good Reading about dependency injection
+## Good Articles About DI
   - [kozmic.net/2012/10/23/ioc-container-solves-a-problem-you-might-not-have-but-its-a-nice-problem-to-have](http://kozmic.net/2012/10/23/ioc-container-solves-a-problem-you-might-not-have-but-its-a-nice-problem-to-have)
   - [ayende.com/blog/2887/dependency-injection-doesnt-cut-it-anymore](http://ayende.com/blog/2887/dependency-injection-doesnt-cut-it-anymore)
   - [ayende.com/blog/4372/rejecting-dependency-injection-inversion](http://ayende.com/blog/4372/rejecting-dependency-injection-inversion)
   - [Dependency Injection in .NET](http://www.manning.com/seemann)
-
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
 _(Nothing yet)_
