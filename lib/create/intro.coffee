@@ -16,6 +16,8 @@ module.exports = (diContainerName) ->
 
       /**
        * @constructor
+       * @struct
+       * @final
        */
       #{diContainerName} = function() {
         this.rules = [];
@@ -28,6 +30,7 @@ module.exports = (diContainerName) ->
        * - with: Named values for arguments we know in runtime therefore have
        *      to be configured in runtime too.
        * - by: A factory method for custom resolving.
+       *
        * @typedef {{
        *   resolve: (Object),
        *   as: (Object|undefined),
@@ -39,7 +42,7 @@ module.exports = (diContainerName) ->
 
       /**
        * @type {Array.<#{diContainerName}.Rule>}
-       * @protected
+       * @private
        */
       #{diContainerName}.prototype.rules;
 

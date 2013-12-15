@@ -21,6 +21,8 @@ suite 'intro', ->
 
       /**
        * @constructor
+       * @struct
+       * @final
        */
       app.DiContainer = function() {
         this.rules = [];
@@ -33,6 +35,7 @@ suite 'intro', ->
        * - with: Named values for arguments we know in runtime therefore have
        *      to be configured in runtime too.
        * - by: A factory method for custom resolving.
+       *
        * @typedef {{
        *   resolve: (Object),
        *   as: (Object|undefined),
@@ -44,7 +47,7 @@ suite 'intro', ->
 
       /**
        * @type {Array.<app.DiContainer.Rule>}
-       * @protected
+       * @private
        */
       app.DiContainer.prototype.rules;
 

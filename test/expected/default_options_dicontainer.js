@@ -7,6 +7,8 @@ goog.require('app.Router');
 
 /**
  * @constructor
+ * @struct
+ * @final
  */
 app.DiContainer = function() {
   this.rules = [];
@@ -19,6 +21,7 @@ app.DiContainer = function() {
  * - with: Named values for arguments we know in runtime therefore have
  *      to be configured in runtime too.
  * - by: A factory method for custom resolving.
+ *
  * @typedef {{
  *   resolve: (Object),
  *   as: (Object|undefined),
@@ -30,7 +33,7 @@ app.DiContainer.Rule;
 
 /**
  * @type {Array.<app.DiContainer.Rule>}
- * @protected
+ * @private
  */
 app.DiContainer.prototype.rules;
 
@@ -62,8 +65,7 @@ app.DiContainer.prototype.resolveAppRouter = function() {
 };
 
 /**
- * NOTE: Do not optimize it without dead code removal etc. check.
- * @protected
+ * @private
  */
 app.DiContainer.prototype.getRuleFor = function(type) {
   var rule;

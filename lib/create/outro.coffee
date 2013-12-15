@@ -3,8 +3,7 @@ module.exports = (diContainerName) ->
   ->
     """
       /**
-       * NOTE: Do not optimize it without dead code removal etc. check.
-       * @protected
+       * @private
        */
       #{diContainerName}.prototype.getRuleFor = function(type) {
         var rule;
