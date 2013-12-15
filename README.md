@@ -96,7 +96,7 @@ goog.exportSymbol('app.main', app.main);
 
 Available in [Este](http://github.com/steida/este) soon. Stay tuned.
 
-## Good Articles About DI
+## More About DI
   - [kozmic.net/2012/10/23/ioc-container-solves-a-problem-you-might-not-have-but-its-a-nice-problem-to-have](http://kozmic.net/2012/10/23/ioc-container-solves-a-problem-you-might-not-have-but-its-a-nice-problem-to-have)
   - [ayende.com/blog/2887/dependency-injection-doesnt-cut-it-anymore](http://ayende.com/blog/2887/dependency-injection-doesnt-cut-it-anymore)
   - [ayende.com/blog/4372/rejecting-dependency-injection-inversion](http://ayende.com/blog/4372/rejecting-dependency-injection-inversion)
