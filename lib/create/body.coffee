@@ -4,25 +4,24 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
     required = {}
     src = []
 
-    walk = (type, resolving = []) ->
-      createPrivateFactory = !!resolving.length
+    for type in resolve
+      do (type, resolving = []) ->
+        createPrivateFactory = !!resolving.length
 
-      return if detectCircularDependency type, resolving, grunt
-      return if detectWrongUsage type, diContainerName, resolving, grunt
+        return if detectCircularDependency type, resolving, grunt
+        return if detectWrongUsage type, diContainerName, resolving, grunt
 
-      definition = typeParser type, resolving
-      return if !definition
+        definition = typeParser type, resolving
+        return if !definition
 
-      src.push createFactoryFor diContainerName,
-        type, definition.arguments, createPrivateFactory
+        src.push createFactoryFor type, definition.arguments, diContainerName,
+          createPrivateFactory
 
-      required[type] = true
+        required[type] = true
 
-      for argument in definition.arguments
-        walk argument, resolving.slice 0
-      return
-
-    walk type for type in resolve
+        for argument in definition.arguments
+          arguments.callee argument.type, resolving.slice 0
+        return
 
     required: Object.keys required
     src: src.join '\n\n'
@@ -62,13 +61,13 @@ detectWrongUsage = (type, diContainerName, resolving, grunt) ->
   false
 
 ###*
-  @param {string} diContainerName
   @param {*} type
-  @param {Array.<string>} args
+  @param {Array.<Object>} args
+  @param {string} diContainerName
   @param {boolean} isPrivate Why private? To prevent using DI container as
     service locator.
 ###
-createFactoryFor = (diContainerName, type, args, isPrivate) ->
+createFactoryFor = (type, args, diContainerName, isPrivate) ->
   src = """
     /**
      #{if !isPrivate then "* Factory for '#{type}'." else ''}
@@ -110,7 +109,7 @@ pascalize = (str) ->
 ###
 factorize = (args) ->
   return '' if !args.length
-  args = args.map (arg) -> "this.resolve#{pascalize arg}();"
+  args = args.map (arg) -> "this.resolve#{pascalize arg.type}();"
   """
   (
       #{args.join '\n\n'}

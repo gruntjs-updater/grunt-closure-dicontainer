@@ -15,7 +15,10 @@ suite 'body', ->
     resolve = ['app.A']
     types =
       'app.A':
-        arguments: ['B']
+        arguments: [
+          name: 'b'
+          type: 'B'
+        ]
       'B':
         arguments: []
     typeParser = (type) ->
@@ -45,7 +48,6 @@ suite 'body', ->
 
   test 'should resolve dependencies', ->
     resolveFactory()
-
     assert.equal resolved.src, """
       /**
        * Factory for 'app.A'.
@@ -75,7 +77,13 @@ suite 'body', ->
   test 'should create unique required', ->
     types =
       'app.A':
-        arguments: ['B', 'B']
+        arguments: [
+          name: 'b'
+          type: 'B'
+        ,
+          name: 'b'
+          type: 'B'
+        ]
       'B':
         arguments: []
     resolveFactory()
@@ -92,9 +100,15 @@ suite 'body', ->
     """
     types =
       'app.A':
-        arguments: ['B']
+        arguments: [
+          name: 'b'
+          type: 'B'
+        ]
       'B':
-        arguments: ['app.A']
+        arguments: [
+          name: 'a'
+          type: 'app.A'
+        ]
     resolveFactory()
     assertErrorAndWarnCalls calls
 
@@ -107,7 +121,10 @@ suite 'body', ->
     """
     types =
       'app.A':
-        arguments: ['app.DiContainer']
+        arguments: [
+          name: 'diContainer'
+          type: 'app.DiContainer'
+        ]
       'app.DiContainer':
         arguments: []
     resolveFactory()

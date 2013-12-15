@@ -14,8 +14,8 @@ suite 'typeParser', ->
       sources =
         'app/a.js': """
           /**
-           * @param {B} B
-           * @param {B} B
+           * @param {B} b
+           * @param {B} b
            * @constructor
            */
           app.A = function(b, b) {}
@@ -68,7 +68,13 @@ suite 'typeParser', ->
   test 'should parse app.A', ->
     parsed = parse 'app.A'
     assert.deepEqual parsed,
-      arguments: ['B', 'B']
+      arguments: [
+        name: 'b'
+        type: 'B'
+      ,
+        name: 'b'
+        type: 'B'
+      ]
 
   test 'should parse B', ->
     parsed = parse 'B'
@@ -146,4 +152,7 @@ suite 'typeParser', ->
     deps['app.D'] = 'app/d.js'
     parsed = parse 'app.D'
     assert.deepEqual parsed,
-      arguments: ['Foo']
+      arguments: [
+        name: 'foo'
+        type: 'Foo'
+      ]

@@ -61,7 +61,7 @@ getAnnotation = (file, src, type, grunt) ->
 
 stripCodeAfterAnnotation = (src, typeIndex) ->
   src = src.slice 0, typeIndex
-  # For types without namespace.
+  # For namespace-less types.
   src.replace /var\s+$/g, ''
 
 getArguments = (annotation) ->
@@ -69,7 +69,9 @@ getArguments = (annotation) ->
   for tag in parsed.tags
     continue if tag.title != 'param'
     continue if tag.type.type == 'OptionalType'
-    if tag.type.type == 'NonNullableType'
+
+    name: tag.name
+    type: if tag.type.type == 'NonNullableType'
       tag.type.expression.name
     else
       tag.type.name
