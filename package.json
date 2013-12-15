@@ -32,7 +32,6 @@
     "doctrine": "~0.1.0"
   },
   "devDependencies": {
-    "difflet": "~0.2.6",
     "grunt": "~0.4.1",
     "grunt-bump": "0.0.13",
     "grunt-contrib-clean": "~0.5.0",

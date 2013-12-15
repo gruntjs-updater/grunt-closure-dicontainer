@@ -1,4 +1,3 @@
-difflet = require 'difflet'
 grunt = require 'grunt'
 
 ###
@@ -30,7 +29,5 @@ exports.closure_dicontainer =
     test.expect 1
     actual = grunt.file.read 'tmp/default_options_dicontainer.js'
     expected = grunt.file.read 'test/expected/default_options_dicontainer.js'
-    # diff = difflet.compare actual, expected
-    # console.log diff
     test.equal actual, expected
     test.done()
