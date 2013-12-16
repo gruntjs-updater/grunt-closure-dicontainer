@@ -1,3 +1,11 @@
 .DS_Store
 grunt-closure-dicontainer.sublime-workspace
-*.coffee
+node_modules
+bower_components
+npm-debug.log
+tmp
+test
+lib/**/*.coffee
+tasks/*.coffee
+test/*.coffee
+client/deps.js
