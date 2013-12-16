@@ -7,7 +7,6 @@ goog.require('app.Router');
 
 /**
  * @constructor
- * @struct
  * @final
  */
 app.DiContainer = function() {
@@ -52,15 +51,14 @@ app.DiContainer.prototype.resolveApp = function() {
   var rule = /** @type {{
     resolve: (Object),
     as: (Object|undefined),
-    with: ({
+    'with': ({
       router: (app.Router|undefined)
     }),
     by: (Function|undefined)
   }} */ (this.getRuleFor(App));
-  this.app = this.app || new App(
-    rule.with.router || this.resolveAppRouter()
-  );
-  return this.app;
+  return this.app || (this.app = new App(
+    rule['with'].router || this.resolveAppRouter()
+  ));
 };
 
 /**
@@ -73,8 +71,7 @@ app.DiContainer.prototype.resolveAppRouter = function() {
     as: (Object|undefined),
     by: (Function|undefined)
   }} */ (this.getRuleFor(app.Router));
-  this.appRouter = this.appRouter || new app.Router;
-  return this.appRouter;
+  return this.appRouter || (this.appRouter = new app.Router);
 };
 
 /**

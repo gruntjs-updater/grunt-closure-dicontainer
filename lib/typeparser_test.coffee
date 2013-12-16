@@ -25,7 +25,7 @@ suite 'typeParser', ->
         /**
          * @constructor
          */
-        var B = function() {}
+        var B = function(
       """
     readFileSync = (file) ->
       sources[file]
@@ -71,16 +71,6 @@ suite 'typeParser', ->
     parsed = parse 'B'
     assert.deepEqual parsed,
       arguments: []
-
-  test 'should handle deps.js missing type definition', ->
-    calls = arrangeErrorWarnCalls """
-      Missing 'app.C' in deps.js when resolving 'foo'.
-      Didn't you forget to provide type?
-
-      goog.provide('app.C');
-    """
-    parsed = parse 'app.C', ['foo', 'bla']
-    assertNullResultWithErrorAndWarnCalls calls, parsed
 
   test 'should handle missing file', ->
     calls = arrangeErrorWarnCalls "File 'app/a.js' failed to load."
@@ -146,6 +136,7 @@ suite 'typeParser', ->
       arguments: []
 
   test 'should handle NonNullableType types', ->
+    deps['Foo'] = true
     arrangeType 'app.D', """
       /**
        * @param {!Foo} foo
@@ -189,5 +180,21 @@ suite 'typeParser', ->
       ,
         name: 'd'
         typeExpression: 'function():number'
+        type: null
+      ]
+
+  test 'should ignore resolvable but not provided', ->
+    arrangeType 'Foo', """
+      /**
+       * @param {Element} element
+       * @constructor
+       */
+      Foo = function(
+    """
+    parsed = parse 'Foo'
+    assert.deepEqual parsed,
+      arguments: [
+        name: 'element'
+        typeExpression: 'Element'
         type: null
       ]

@@ -21,7 +21,6 @@ suite 'intro', ->
 
       /**
        * @constructor
-       * @struct
        * @final
        */
       app.DiContainer = function() {

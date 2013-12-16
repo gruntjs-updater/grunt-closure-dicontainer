@@ -16,7 +16,6 @@ module.exports = (diContainerName) ->
 
       /**
        * @constructor
-       * @struct
        * @final
        */
       #{diContainerName} = function() {

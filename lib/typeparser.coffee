@@ -5,17 +5,7 @@ module.exports = (deps, readFileSync, grunt) ->
 
   (type, resolving) ->
     file = deps[type]
-
-    if !file
-      fail grunt, """
-        Missing '#{type}' in deps.js when resolving '#{
-          resolving.slice(0, -1).join '\' then \''
-        }'.
-        Didn't you forget to provide type?
-
-        goog.provide('#{type}');
-      """
-      return null
+    return null if !file
 
     try
       src = readFileSync file, 'utf8'
@@ -27,7 +17,7 @@ module.exports = (deps, readFileSync, grunt) ->
     if !annotation
       return null
 
-    arguments: getArguments annotation
+    arguments: getArguments annotation, deps
 
 getAnnotation = (file, src, type, grunt) ->
   typeIndex = src.indexOf "#{type} ="
@@ -66,15 +56,17 @@ stripCodeAfterAnnotation = (src, typeIndex) ->
   # For namespace-less types.
   src.replace /var\s+$/g, ''
 
-getArguments = (annotation) ->
+getArguments = (annotation, deps) ->
   parsed = doctrine.parse "/*#{annotation}*/", unwrap: true
   for tag in parsed.tags
     continue if tag.title != 'param'
     continue if tag.type.type == 'OptionalType'
 
+    type = getArgumentType tag
+
     name: tag.name
     typeExpression: doctrine.type.stringify tag.type, compact: true
-    type: getArgumentType tag
+    type: if deps[type] then type else null
 
 getArgumentType = (tag) ->
   return null if tag.type.type not in [

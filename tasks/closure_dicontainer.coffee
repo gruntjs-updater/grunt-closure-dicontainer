@@ -66,6 +66,6 @@ module.exports = (grunt) ->
     ].join ''
     return if src.indexOf(line) > -1
 
-    src += '\n' + line
+    src += line + '\n'
     grunt.file.write depsPath, src
     grunt.log.writeln "File \"#{depsPath}\" created."

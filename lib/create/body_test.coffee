@@ -27,6 +27,14 @@ suite 'body', ->
           name: 'c'
           typeExpression: 'Array.<string>'
           type: null
+        ,
+          name: 'd'
+          typeExpression: 'Element'
+          type: 'Element'
+        ,
+          name: 'e'
+          typeExpression: 'Document'
+          type: null
         ]
       'B':
         arguments: []
@@ -66,19 +74,22 @@ suite 'body', ->
         var rule = /** @type {{
           resolve: (Object),
           as: (Object|undefined),
-          with: ({
-            b: (B|undefined)
-            bb: (B|undefined)
-            c: (Array.<string>|undefined)
+          'with': ({
+            b: (B|undefined),
+            bb: (B|undefined),
+            c: (Array.<string>|undefined),
+            d: (Element|undefined),
+            e: (Document|undefined)
           }),
           by: (Function|undefined)
         }} */ (this.getRuleFor(app.A));
-        this.appA = this.appA || new app.A(
-          rule.with.b || this.resolveB(),
-          rule.with.bb || this.resolveB(),
-          rule.with.c
-        );
-        return this.appA;
+        return this.appA || (this.appA = new app.A(
+          rule['with'].b || this.resolveB(),
+          rule['with'].bb || this.resolveB(),
+          rule['with'].c || null,
+          rule['with'].d || this.resolveElement(),
+          rule['with'].e || null
+        ));
       };
 
       /**
@@ -91,8 +102,7 @@ suite 'body', ->
           as: (Object|undefined),
           by: (Function|undefined)
         }} */ (this.getRuleFor(B));
-        this.b = this.b || new B;
-        return this.b;
+        return this.b || (this.b = new B);
       };
     """
 
@@ -140,8 +150,10 @@ suite 'body', ->
 
   test 'should detect wrong usage', ->
     calls = arrangeErrorWarnCalls """
-      Wrong DI container usage detected. Don't use DI container as service locator.
-      The only place where DI container should be used is composition root.
+      Wrong DI container usage detected. Please do not use DI container as
+      service locator. The only right place for DI container is
+      composition root.
+
       blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern.
       blog.ploeh.dk/2011/07/28/CompositionRoot
     """

@@ -12,11 +12,11 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
         return if detectWrongUsage type, diContainerName, resolving, grunt
         return if required[type]
 
-        required[type] = true
-        resolving.push type
-
         definition = typeParser type, resolving
         return if !definition
+
+        required[type] = true
+        resolving.push type
 
         factory = createFactoryFor type, definition.arguments, diContainerName,
           resolving.length > 1
@@ -56,8 +56,10 @@ detectCircularDependency = (type, resolving, grunt) ->
 detectWrongUsage = (type, diContainerName, resolving, grunt) ->
   if type == diContainerName
     fail grunt, """
-      Wrong DI container usage detected. Don't use DI container as service locator.
-      The only place where DI container should be used is composition root.
+      Wrong DI container usage detected. Please do not use DI container as
+      service locator. The only right place for DI container is
+      composition root.
+
       blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern.
       blog.ploeh.dk/2011/07/28/CompositionRoot
     """
@@ -76,8 +78,8 @@ createFactoryFor = (type, args, diContainerName, isPrivate) ->
     lines = for arg in args
       "#{arg.name}: (#{arg.typeExpression}|undefined)"
     """
-    with: ({
-          #{lines.join '\n\n      '}
+    'with': ({
+          #{lines.join ',\n\n      '}
         }),
     """
   else
@@ -96,8 +98,7 @@ createFactoryFor = (type, args, diContainerName, isPrivate) ->
         #{_with}
         by: (Function|undefined)
       }} */ (this.getRuleFor(#{type}));
-      this.#{camelize type} = this.#{camelize type} || new #{type}#{factorize args};
-      return this.#{camelize type};
+      return this.#{camelize type} || (this.#{camelize type} = new #{type}#{factorize args});
     };
   """
   # Remove empty lines.
@@ -131,9 +132,11 @@ pascalize = (str) ->
 factorize = (args) ->
   return '' if !args.length
   lines = args.map (arg) ->
-    line = "rule.with.#{arg.name}"
+    line = "rule['with'].#{arg.name} || "
     if arg.type
-      line += " || this.resolve#{pascalize arg.type || ''}()"
+      line += "this.resolve#{pascalize arg.type || ''}()"
+    else
+      line += "null"
     line
 
   """
