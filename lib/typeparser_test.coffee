@@ -3,6 +3,7 @@ typeParser = require './typeparser'
 suite 'typeParser', ->
 
   deps = null
+  sources = null
   readFileSync = null
   grunt = null
 
@@ -10,39 +11,23 @@ suite 'typeParser', ->
     deps =
       'app.A': 'app/a.js'
       'B': 'app/b.js'
+    sources =
+      'app/a.js': """
+        /**
+         * @param {B} b
+         * @param {B} b
+         * @constructor
+         */
+        app.A = function(
+      """
+
+      'app/b.js': """
+        /**
+         * @constructor
+         */
+        var B = function() {}
+      """
     readFileSync = (file) ->
-      sources =
-        'app/a.js': """
-          /**
-           * @param {B} b
-           * @param {B} b
-           * @constructor
-           */
-          app.A = function(b, b) {}
-        """
-
-        'app/b.js': """
-          /**
-           * @constructor
-           */
-          var B = function() {}
-        """
-
-        'app/c.js': """
-          /**
-           * @param {Foo=} foo
-           * @constructor
-           */
-          app.C = function(foo) {}
-        """
-
-        'app/d.js': """
-          /**
-           * @param {!Foo} foo
-           * @constructor
-           */
-          app.D = function(foo) {}
-        """
       sources[file]
     grunt =
       log: error: ->
@@ -65,14 +50,20 @@ suite 'typeParser', ->
     assert.equal calls(), 'errorwarn'
     assert.isNull parsed
 
+  arrangeType = (type, src) ->
+    deps[type] = 'foo'
+    sources['foo'] = src
+
   test 'should parse app.A', ->
     parsed = parse 'app.A'
     assert.deepEqual parsed,
       arguments: [
         name: 'b'
+        typeExpression: 'B'
         type: 'B'
       ,
         name: 'b'
+        typeExpression: 'B'
         type: 'B'
       ]
 
@@ -83,7 +74,7 @@ suite 'typeParser', ->
 
   test 'should handle deps.js missing type definition', ->
     calls = arrangeErrorWarnCalls """
-      Missing 'app.C' in deps.js when resolving 'foo' then 'bla'.
+      Missing 'app.C' in deps.js when resolving 'foo'.
       Didn't you forget to provide type?
 
       goog.provide('app.C');
@@ -101,11 +92,11 @@ suite 'typeParser', ->
     calls = arrangeErrorWarnCalls "Type 'app.A' definition not found in file: 'app/a.js'."
     readFileSync = (file) -> """
       /**
-       * @param {B} B
-       * @param {B} B
+       * @param {B} b
+       * @param {B} b
        * @constructor
        */
-      fok.A = function(b, b) {}
+      fok.A = function(
     """
     parsed = parse 'app.A'
     assertNullResultWithErrorAndWarnCalls calls, parsed
@@ -117,7 +108,7 @@ suite 'typeParser', ->
     """
     readFileSync = (file) -> """
       !
-      app.A = function(b, b) {}
+      app.A = function(
     """
     parsed = parse 'app.A'
     assertNullResultWithErrorAndWarnCalls calls, parsed
@@ -125,7 +116,7 @@ suite 'typeParser', ->
   test 'should handle missing any annotation in source', ->
     calls = arrangeErrorWarnCalls "Type 'app.A' annotation not found in file: 'app/a.js'."
     readFileSync = (file) -> """
-      app.A = function(b, b) {}
+      app.A = function(
     """
     parsed = parse 'app.A'
     assertNullResultWithErrorAndWarnCalls calls, parsed
@@ -137,22 +128,66 @@ suite 'typeParser', ->
        * @type {string}
        */
       var a;
-      app.A = function(b, b) {}
+      app.A = function(
     """
     parsed = parse 'app.A'
     assertNullResultWithErrorAndWarnCalls calls, parsed
 
   test 'should ignore optional types', ->
-    deps['app.C'] = 'app/c.js'
+    arrangeType 'app.C', """
+      /**
+       * @param {Foo=} foo
+       * @constructor
+       */
+      app.C = function(
+    """
     parsed = parse 'app.C'
     assert.deepEqual parsed,
       arguments: []
 
   test 'should handle NonNullableType types', ->
-    deps['app.D'] = 'app/d.js'
+    arrangeType 'app.D', """
+      /**
+       * @param {!Foo} foo
+       * @constructor
+       */
+      app.D = function(
+    """
     parsed = parse 'app.D'
     assert.deepEqual parsed,
       arguments: [
         name: 'foo'
+        typeExpression: '!Foo'
         type: 'Foo'
+      ]
+
+  test 'should ignore not yet resolvable', ->
+    arrangeType 'Foo', """
+      /**
+       * @param {Array.<Element>} elements
+       * @param {*} bla
+       * @param {?} c
+       * @param {function():number} d
+       * @constructor
+       */
+      Foo = function(
+    """
+    parsed = parse 'Foo'
+    assert.deepEqual parsed,
+      arguments: [
+        name: 'elements'
+        typeExpression: 'Array.<Element>'
+        type: null
+      ,
+        name: 'bla'
+        typeExpression: '*'
+        type: null
+      ,
+        name: 'c'
+        typeExpression: '?'
+        type: null
+      ,
+        name: 'd'
+        typeExpression: 'function():number'
+        type: null
       ]

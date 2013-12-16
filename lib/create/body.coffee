@@ -4,8 +4,10 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
     required = {}
     src = []
 
-    for type in resolve
-      do (type, resolving = []) ->
+    for typeExpression in resolve
+      do (typeExpression, resolving = []) ->
+        # TODO: Handle type expressions.
+        type = typeExpression
         return if detectCircularDependency type, resolving, grunt
         return if detectWrongUsage type, diContainerName, resolving, grunt
         return if required[type]
@@ -16,11 +18,14 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
         definition = typeParser type, resolving
         return if !definition
 
-        src.push createFactoryFor type, definition.arguments, diContainerName,
+        factory = createFactoryFor type, definition.arguments, diContainerName,
           resolving.length > 1
+        src.push factory
 
         for argument in definition.arguments
+          continue if !argument.type
           arguments.callee argument.type, resolving.slice 0
+
         return
 
     required: Object.keys required
@@ -69,7 +74,7 @@ detectWrongUsage = (type, diContainerName, resolving, grunt) ->
 createFactoryFor = (type, args, diContainerName, isPrivate) ->
   _with = if args.length
     lines = for arg in args
-      "#{arg.name}: (#{arg.type}|undefined)"
+      "#{arg.name}: (#{arg.typeExpression}|undefined)"
     """
     with: ({
           #{lines.join '\n\n      '}
@@ -126,12 +131,16 @@ pascalize = (str) ->
 factorize = (args) ->
   return '' if !args.length
   lines = args.map (arg) ->
-    "rule.with.#{arg.name} || this.resolve#{pascalize arg.type}()"
+    line = "rule.with.#{arg.name}"
+    if arg.type
+      line += " || this.resolve#{pascalize arg.type || ''}()"
+    line
 
   """
   (
       #{lines.join ',\n\n    '}
-    )"""
+    )
+  """
 
 fail = (grunt, message) ->
   grunt.log.error message

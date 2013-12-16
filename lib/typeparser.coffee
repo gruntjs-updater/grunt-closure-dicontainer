@@ -8,7 +8,9 @@ module.exports = (deps, readFileSync, grunt) ->
 
     if !file
       fail grunt, """
-        Missing '#{type}' in deps.js when resolving '#{resolving.join '\' then \''}'.
+        Missing '#{type}' in deps.js when resolving '#{
+          resolving.slice(0, -1).join '\' then \''
+        }'.
         Didn't you forget to provide type?
 
         goog.provide('#{type}');
@@ -71,10 +73,18 @@ getArguments = (annotation) ->
     continue if tag.type.type == 'OptionalType'
 
     name: tag.name
-    type: if tag.type.type == 'NonNullableType'
-      tag.type.expression.name
-    else
-      tag.type.name
+    typeExpression: doctrine.type.stringify tag.type, compact: true
+    type: getArgumentType tag
+
+getArgumentType = (tag) ->
+  return null if tag.type.type not in [
+    # TODO: Implement all type expressions.
+    'NameExpression'
+    'OptionalType'
+    'NonNullableType'
+  ]
+  return tag.type.name if tag.type.type == 'NameExpression'
+  tag.type.expression.name
 
 fail = (grunt, message) ->
   grunt.log.error message
