@@ -96,62 +96,62 @@ suite 'body', ->
       };
     """
 
-  # test 'should create required', ->
-  #   resolveFactory()
-  #   assert.deepEqual resolved.required, ['app.A', 'B']
+  test 'should create required', ->
+    resolveFactory()
+    assert.deepEqual resolved.required, ['app.A', 'B']
 
-  # test 'should create unique required', ->
-  #   types =
-  #     'app.A':
-  #       arguments: [
-  #         name: 'b'
-  #         type: 'B'
-  #       ,
-  #         name: 'b'
-  #         type: 'B'
-  #       ]
-  #     'B':
-  #       arguments: []
-  #   resolveFactory()
-  #   assert.deepEqual resolved.required, ['app.A', 'B']
+  test 'should create unique required', ->
+    types =
+      'app.A':
+        arguments: [
+          name: 'b'
+          type: 'B'
+        ,
+          name: 'b'
+          type: 'B'
+        ]
+      'B':
+        arguments: []
+    resolveFactory()
+    assert.deepEqual resolved.required, ['app.A', 'B']
 
-  # test 'should do not generate code for missing type definition', ->
-  #   resolve = ['app.iAmNotExists']
-  #   resolveFactory()
-  #   assert.equal resolved.src, ""
+  test 'should do not generate code for missing type definition', ->
+    resolve = ['app.iAmNotExists']
+    resolveFactory()
+    assert.equal resolved.src, ""
 
-  # test 'should detect circular dependency', ->
-  #   calls = arrangeErrorWarnCalls """
-  #     Can't create 'app.A' as it has circular dependency: app.A -> B -> app.A.
-  #   """
-  #   types =
-  #     'app.A':
-  #       arguments: [
-  #         name: 'b'
-  #         type: 'B'
-  #       ]
-  #     'B':
-  #       arguments: [
-  #         name: 'a'
-  #         type: 'app.A'
-  #       ]
-  #   resolveFactory()
-  #   assertErrorAndWarnCalls calls
+  test 'should detect circular dependency', ->
+    calls = arrangeErrorWarnCalls """
+      Can't create 'app.A' as it has circular dependency: app.A -> B -> app.A.
+    """
+    types =
+      'app.A':
+        arguments: [
+          name: 'b'
+          type: 'B'
+        ]
+      'B':
+        arguments: [
+          name: 'a'
+          type: 'app.A'
+        ]
+    resolveFactory()
+    assertErrorAndWarnCalls calls
 
-  # test 'should detect wrong usage', ->
-  #   calls = arrangeErrorWarnCalls """
-  #     Wrong DI container usage detected. Don't use DI container as service locator.
-  #     The only place where DI container should be used is composition root.
-  #     blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern.
-  #     blog.ploeh.dk/2011/07/28/CompositionRoot
-  #   """
-  #   types =
-  #     'app.A':
-  #       arguments: [
-  #         name: 'diContainer'
-  #         type: 'app.DiContainer'
-  #       ]
-  #     'app.DiContainer':
-  #       arguments: []
-  #   resolveFactory()
-  #   assertErrorAndWarnCalls calls
+  test 'should detect wrong usage', ->
+    calls = arrangeErrorWarnCalls """
+      Wrong DI container usage detected. Don't use DI container as service locator.
+      The only place where DI container should be used is composition root.
+      blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern.
+      blog.ploeh.dk/2011/07/28/CompositionRoot
+    """
+    types =
+      'app.A':
+        arguments: [
+          name: 'diContainer'
+          type: 'app.DiContainer'
+        ]
+      'app.DiContainer':
+        arguments: []
+    resolveFactory()
+    assertErrorAndWarnCalls calls
