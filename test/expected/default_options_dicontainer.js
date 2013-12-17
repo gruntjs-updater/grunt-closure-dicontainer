@@ -14,33 +14,23 @@ app.DiContainer = function() {
 };
 
 /**
- * Resolving rules for DI Container.
- * - resolve: Type or array of types going to be resolved.
- * - as: Which type should be returned instead.
- * - with: Named values for arguments we know in runtime therefore have
- *      to be configured in runtime too.
- * - by: A factory method for custom resolving.
- *
- * @typedef {{
- *   resolve: (Object),
- *   as: (Object|undefined),
- *   with: (Object|undefined),
- *   by: (Function|undefined)
- * }}
- */
-app.DiContainer.Rule;
-
-/**
- * @type {Array.<app.DiContainer.Rule>}
+ * @type {Array}
  * @private
  */
 app.DiContainer.prototype.rules;
 
 /**
- * @param {Array.<app.DiContainer.Rule>} rules
+ * Configure resolving rules for DI Container.
+ * @param {...Object} var_args
+ *   - resolve: Type or array of types to be resolved.
+ *   - as: Which type should be return instead.
+ *   - with: Named values for arguments we know in runtime therefore have
+ *      to be configured in runtime too.
+ *   - by: A factory method for custom resolving.
  */
-app.DiContainer.prototype.configure = function(rules) {
-  this.rules.push.apply(this.rules, rules);
+app.DiContainer.prototype.configure = function(var_args) {
+  for (var i = 0; i < arguments.length; i++)
+    this.rules.push(arguments[i]);
 };
 
 /**
