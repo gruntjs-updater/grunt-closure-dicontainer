@@ -51,7 +51,7 @@ app.DiContainer.prototype.resolveApp = function() {
   var rule = /** @type {{
     resolve: (Object),
     as: (Object|undefined),
-    'with': ({
+    with: ({
       router: (app.Router|undefined)
     }),
     by: (Function|undefined)

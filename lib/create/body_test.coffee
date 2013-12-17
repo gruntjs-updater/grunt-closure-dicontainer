@@ -74,7 +74,7 @@ suite 'body', ->
         var rule = /** @type {{
           resolve: (Object),
           as: (Object|undefined),
-          'with': ({
+          with: ({
             b: (B|undefined),
             bb: (B|undefined),
             c: (Array.<string>|undefined),

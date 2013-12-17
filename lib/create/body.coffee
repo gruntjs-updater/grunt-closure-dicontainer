@@ -78,7 +78,7 @@ createFactoryFor = (type, args, diContainerName, isPrivate) ->
     lines = for arg in args
       "#{arg.name}: (#{arg.typeExpression}|undefined)"
     """
-    'with': ({
+    with: ({
           #{lines.join ',\n\n      '}
         }),
     """
