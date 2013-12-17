@@ -74,17 +74,6 @@ detectWrongUsage = (type, diContainerName, resolving, grunt) ->
     service locator.
 ###
 createFactoryFor = (type, args, diContainerName, isPrivate) ->
-  _with = if args.length
-    lines = for arg in args
-      "#{arg.name}: (#{arg.typeExpression}|undefined)"
-    """
-    with: ({
-          #{lines.join ',\n\n      '}
-        }),
-    """
-  else
-    ''
-
   src = """
     /**
      #{if !isPrivate then "* Factory for '#{type}'." else ''}
@@ -95,7 +84,7 @@ createFactoryFor = (type, args, diContainerName, isPrivate) ->
       var rule = /** @type {{
         resolve: (Object),
         as: (Object|undefined),
-        #{_with}
+        #{createWithFor args}
         by: (Function|undefined)
       }} */ (this.getRuleFor(#{type}));
       return this.#{camelize type} || (this.#{camelize type} = new #{type}#{factorize args});
@@ -104,6 +93,20 @@ createFactoryFor = (type, args, diContainerName, isPrivate) ->
   # Remove empty lines.
   lines = (line for line in src.split '\n' when line.trim())
   lines.join '\n'
+
+###*
+  @param {Array} args
+###
+createWithFor = (args) ->
+  return '' if !args.length
+  lines = for arg in args
+    "#{arg.name}: (#{arg.typeExpression}|undefined)"
+
+  """
+  with: ({
+        #{lines.join ',\n\n      '}
+      }),
+  """
 
 ###*
   @param {string} str foo.bla.Bar
