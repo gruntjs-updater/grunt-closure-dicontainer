@@ -86,9 +86,9 @@ suite 'body', ->
         return this.appA || (this.appA = new app.A(
           rule['with'].b || this.resolveB(),
           rule['with'].bb || this.resolveB(),
-          rule['with'].c || null,
+          rule['with'].c || void 0,
           rule['with'].d || this.resolveElement(),
-          rule['with'].e || null
+          rule['with'].e || void 0
         ));
       };
 

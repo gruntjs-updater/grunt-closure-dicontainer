@@ -136,7 +136,7 @@ factorize = (args) ->
     if arg.type
       line += "this.resolve#{pascalize arg.type || ''}()"
     else
-      line += "null"
+      line += "void 0"
     line
 
   """
