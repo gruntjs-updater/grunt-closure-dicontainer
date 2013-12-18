@@ -77,23 +77,38 @@ Prefix for `deps.js` processing.
 
 How to use DI container in you app:
 
-```js
-goog.provide('app.main');
-
-goog.require('app.DiContainer');
-
-/**
- * @param {Object} data Server side data.
- */
-app.main = function(data) {
-  var container = new app.DiContainer();
-  // TODO: Add configuration for custom resolving.
-  container.resolveApp();
-};
-
-goog.exportSymbol('app.main', app.main);
+```coffee
+###*
+  @fileoverview App main method.
+###
+ 
+goog.provide 'app.main'
+ 
+goog.require 'app.DiContainer'
+ 
+app.main = ->
+  container = new app.DiContainer
+  
+  container.configure
+    resolve: App
+    with: element: document.body
+  ,
+    resolve: este.storage.IStorage
+    as: este.storage.Local
+  ,
+    resolve: foo.Bla
+    by: ->
+      bla = new foo.Bla
+      bla.setSomething()
+      bla
+ 
+  app = container.resolveApp()
+  app.start()
+ 
+goog.exportSymbol 'app.main', app.main
 ```
 
+Add grunt-closure-dicontainer task after deps.js generation task.
 Available in [Este](http://github.com/steida/este) soon. Stay tuned.
 
 ## More About DI
@@ -103,4 +118,4 @@ Available in [Este](http://github.com/steida/este) soon. Stay tuned.
   - [Dependency Injection in .NET](http://www.manning.com/seemann)
 
 ## Release History
-_(Nothing yet)_
+  2013-12-17   v0.2.2   Work in progress, not yet officially released.
