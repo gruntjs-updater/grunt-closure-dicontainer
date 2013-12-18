@@ -4,6 +4,7 @@ goog.provide('app.DiContainer');
 
 goog.require('App');
 goog.require('app.Router');
+goog.require('goog.asserts');
 
 /**
  * @constructor
@@ -29,8 +30,18 @@ app.DiContainer.prototype.rules;
  *   - by: A factory method for custom resolving.
  */
 app.DiContainer.prototype.configure = function(var_args) {
-  for (var i = 0; i < arguments.length; i++)
-    this.rules.push(arguments[i]);
+  for (var i = 0; i < arguments.length; i++) {
+    var rule = arguments[i];
+    goog.asserts.assertObject(rule,
+      'DI container: Configuration rule has to be type of object.');
+    goog.asserts.assertObject(rule.resolve,
+      'DI container: Rule resolve property must be type of object.');
+    goog.asserts.assert(this.ruleIsWellConfigured(rule),
+      'DI container: Rule has to define at least one of these props: with, as, by.');
+    goog.asserts.assert(!this.ruleWasYetConfigured(rule),
+      'DI container: Rule resolve prop can be configured only once.');
+    this.rules.push(rule);
+  }
 };
 
 /**
@@ -76,4 +87,33 @@ app.DiContainer.prototype.getRuleFor = function(type) {
   rule = rule || {};
   rule['with'] = rule['with'] || {};
   return rule;
+};
+
+/**
+ * @param {Object} rule
+ * @return {boolean}
+ * @private
+ */
+app.DiContainer.prototype.ruleIsWellConfigured = function(rule) {
+  if (rule['with'] || rule.by || rule.as) {
+    if (rule['with']) goog.asserts.assertObject(rule['with'],
+      'DI container: rule.with property must be type of object.');
+    if (rule['as']) goog.asserts.assertObject(rule.as,
+      'DI container: rule.as property must be type of object.');
+    if (rule['by']) goog.asserts.assertFunction(rule.by,
+      'DI container: rule.by property must be type of function.');
+    return true;
+  }
+  return false;
+};
+
+/**
+ * @param {Object} newRule
+ * @return {boolean}
+ * @private
+ */
+app.DiContainer.prototype.ruleWasYetConfigured = function(newRule) {
+  return this.rules.some(function(rule) {
+    return rule.resolve == newRule.resolve;
+  });
 };

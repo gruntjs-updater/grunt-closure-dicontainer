@@ -133,7 +133,9 @@ suite 'body', ->
 
   test 'should create required', ->
     resolveFactory()
-    assert.deepEqual resolved.required, ['app.A', 'B', 'Element']
+    assert.deepEqual resolved.required, [
+      'goog.asserts', 'app.A', 'B', 'Element'
+    ]
 
   test 'should create unique required', ->
     types =
@@ -148,7 +150,9 @@ suite 'body', ->
       'B':
         arguments: []
     resolveFactory()
-    assert.deepEqual resolved.required, ['app.A', 'B']
+    assert.deepEqual resolved.required, [
+      'goog.asserts', 'app.A', 'B'
+    ]
 
   test 'should do not generate code for missing type definition', ->
     resolve = ['app.iAmNotExists']

@@ -1,7 +1,8 @@
 module.exports = (diContainerName, resolve, typeParser, grunt) ->
 
   ->
-    required = {}
+    required =
+      'goog.asserts': true
     src = []
 
     for type in resolve
