@@ -75,7 +75,6 @@ getArguments = (tags, deps) ->
 
 getArgumentType = (tag) ->
   return null if tag.type.type not in [
-    # TODO: Implement all type expressions.
     'NameExpression'
     'OptionalType'
     'NonNullableType'
