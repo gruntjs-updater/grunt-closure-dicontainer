@@ -36,8 +36,20 @@ suite 'body', ->
           typeExpression: 'Document'
           type: null
         ]
+        invokeAs: 'class'
       'B':
         arguments: []
+        invokeAs: 'class'
+      'Element':
+        arguments: []
+        invokeAs: 'class'
+      'create':
+        arguments: []
+        invokeAs: 'function'
+      'enum':
+        arguments: []
+        invokeAs: 'value'
+
     typeParser = (type) ->
       types[type]
     grunt =
@@ -104,11 +116,24 @@ suite 'body', ->
         }} */ (this.getRuleFor(B));
         return this.b || (this.b = new B);
       };
+
+      /**
+       * @return {Element}
+       * @private
+       */
+      app.DiContainer.prototype.resolveElement = function() {
+        var rule = /** @type {{
+          resolve: (Object),
+          as: (Object|undefined),
+          by: (Function|undefined)
+        }} */ (this.getRuleFor(Element));
+        return this.element || (this.element = new Element);
+      };
     """
 
   test 'should create required', ->
     resolveFactory()
-    assert.deepEqual resolved.required, ['app.A', 'B']
+    assert.deepEqual resolved.required, ['app.A', 'B', 'Element']
 
   test 'should create unique required', ->
     types =
@@ -167,3 +192,37 @@ suite 'body', ->
         arguments: []
     resolveFactory()
     assertErrorAndWarnCalls calls
+
+  test 'should create factory for factory', ->
+    resolve = ['create']
+    resolveFactory()
+    assert.equal resolved.src, """
+      /**
+       * Factory for 'create'.
+       */
+      app.DiContainer.prototype.resolveCreate = function() {
+        var rule = /** @type {{
+          resolve: (Object),
+          as: (Object|undefined),
+          by: (Function|undefined)
+        }} */ (this.getRuleFor(create));
+        return this.create || (this.create = create());
+      };
+    """
+
+  test 'should create factory for value', ->
+    resolve = ['enum']
+    resolveFactory()
+    assert.equal resolved.src, """
+      /**
+       * Factory for 'enum'.
+       */
+      app.DiContainer.prototype.resolveEnum = function() {
+        var rule = /** @type {{
+          resolve: (Object),
+          as: (Object|undefined),
+          by: (Function|undefined)
+        }} */ (this.getRuleFor(enum));
+        return this.enum || (this.enum = enum);
+      };
+    """

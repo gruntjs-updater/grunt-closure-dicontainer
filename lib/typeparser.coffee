@@ -17,7 +17,7 @@ module.exports = (deps, readFileSync, grunt) ->
     if !annotation
       return null
 
-    arguments: getArguments annotation, deps
+    getDefinition annotation, deps
 
 getAnnotation = (file, src, type, grunt) ->
   typeIndex = src.indexOf "#{type} ="
@@ -56,17 +56,22 @@ stripCodeAfterAnnotation = (src, typeIndex) ->
   # For namespace-less types.
   src.replace /var\s+$/g, ''
 
-getArguments = (annotation, deps) ->
+getDefinition = (annotation, deps) ->
   parsed = doctrine.parse "/*#{annotation}*/", unwrap: true
-  for tag in parsed.tags
+
+  arguments: getArguments parsed.tags, deps
+  invokeAs: invokeAs parsed.tags
+
+getArguments = (tags, deps) ->
+  for tag in tags
     continue if tag.title != 'param'
     continue if tag.type.type == 'OptionalType'
 
-    type = getArgumentType tag
-
     name: tag.name
     typeExpression: doctrine.type.stringify tag.type, compact: true
-    type: if deps[type] then type else null
+    type: do ->
+      type = getArgumentType tag
+      if deps[type] then type else null
 
 getArgumentType = (tag) ->
   return null if tag.type.type not in [
@@ -77,6 +82,14 @@ getArgumentType = (tag) ->
   ]
   return tag.type.name if tag.type.type == 'NameExpression'
   tag.type.expression.name
+
+invokeAs = (tags) ->
+  for tag in tags
+    return 'class' if tag.title == 'constructor'
+    return 'function' if tag.title == 'type' && (
+      tag.type.name == 'Function' ||
+      tag.type.type == 'FunctionType')
+  'value'
 
 fail = (grunt, message) ->
   grunt.log.error message

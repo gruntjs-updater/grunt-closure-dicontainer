@@ -4,10 +4,8 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
     required = {}
     src = []
 
-    for typeExpression in resolve
-      do (typeExpression, resolving = []) ->
-        # TODO: Handle type expressions.
-        type = typeExpression
+    for type in resolve
+      do (type, resolving = []) ->
         return if detectCircularDependency type, resolving, grunt
         return if detectWrongUsage type, diContainerName, resolving, grunt
         return if required[type]
@@ -18,7 +16,7 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
         required[type] = true
         resolving.push type
 
-        factory = createFactoryFor type, definition.arguments, diContainerName,
+        factory = createFactoryFor type, definition, diContainerName,
           resolving.length > 1
         src.push factory
 
@@ -68,16 +66,19 @@ detectWrongUsage = (type, diContainerName, resolving, grunt) ->
 
 ###*
   @param {*} type
-  @param {Array.<Object>} args
+  @param {Object} definition
   @param {string} diContainerName
   @param {boolean} isPrivate Why private? To prevent using DI container as
     service locator.
 ###
-createFactoryFor = (type, args, diContainerName, isPrivate) ->
+createFactoryFor = (type, definition, diContainerName, isPrivate) ->
+  args = definition.arguments
+  isClass = definition.invokeAs == 'class'
+  isFunction = definition.invokeAs == 'function'
   src = """
     /**
      #{if !isPrivate then "* Factory for '#{type}'." else ''}
-     * @return {#{type}}
+     #{if isClass then "* @return {#{type}}" else ''}
      #{if isPrivate then '* @private' else ''}
      */
     #{diContainerName}.prototype.resolve#{pascalize type} = function() {
@@ -87,7 +88,11 @@ createFactoryFor = (type, args, diContainerName, isPrivate) ->
         #{createWithFor args}
         by: (Function|undefined)
       }} */ (this.getRuleFor(#{type}));
-      return this.#{camelize type} || (this.#{camelize type} = new #{type}#{factorize args});
+      return this.#{camelize type} || (this.#{camelize type} = #{
+        if isClass then 'new ' else ''
+      }#{type}#{factorize args}#{
+        if isFunction && !args.length then '()' else ''
+      });
     };
   """
   # Remove empty lines.

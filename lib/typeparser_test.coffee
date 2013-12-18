@@ -66,11 +66,13 @@ suite 'typeParser', ->
         typeExpression: 'B'
         type: 'B'
       ]
+      invokeAs: 'class'
 
   test 'should parse B', ->
     parsed = parse 'B'
     assert.deepEqual parsed,
       arguments: []
+      invokeAs: 'class'
 
   test 'should handle missing file', ->
     calls = arrangeErrorWarnCalls "File 'app/a.js' failed to load."
@@ -134,6 +136,7 @@ suite 'typeParser', ->
     parsed = parse 'app.C'
     assert.deepEqual parsed,
       arguments: []
+      invokeAs: 'class'
 
   test 'should handle NonNullableType types', ->
     deps['Foo'] = true
@@ -151,6 +154,7 @@ suite 'typeParser', ->
         typeExpression: '!Foo'
         type: 'Foo'
       ]
+      invokeAs: 'class'
 
   test 'should ignore not yet resolvable', ->
     arrangeType 'Foo', """
@@ -182,6 +186,7 @@ suite 'typeParser', ->
         typeExpression: 'function():number'
         type: null
       ]
+      invokeAs: 'class'
 
   test 'should ignore resolvable but not provided', ->
     arrangeType 'Foo', """
@@ -198,3 +203,55 @@ suite 'typeParser', ->
         typeExpression: 'Element'
         type: null
       ]
+      invokeAs: 'class'
+
+  suite 'invoke', ->
+    test 'should detect class', ->
+      arrangeType 'Class', """
+        /**
+         * @constructor
+         */
+        Class = function(
+      """
+      parsed = parse 'Class'
+      assert.deepEqual parsed,
+        arguments: []
+        invokeAs: 'class'
+
+    test 'should detect function', ->
+      arrangeType 'createFoo', """
+        /**
+         * @type {Function}
+         */
+        createFoo = function(
+      """
+      parsed = parse 'createFoo'
+      assert.deepEqual parsed,
+        arguments: []
+        invokeAs: 'function'
+
+    test 'should detect function type', ->
+      arrangeType 'createFoo', """
+        /**
+         * @type {function()}
+         */
+        createFoo = function(
+      """
+      parsed = parse 'createFoo'
+      assert.deepEqual parsed,
+        arguments: []
+        invokeAs: 'function'
+
+    test 'should return value if not resolved', ->
+      arrangeType 'createFoo', """
+        /**
+         * Constants for event names.
+         * @enum {string}
+         */
+        createFoo = {
+
+      """
+      parsed = parse 'createFoo'
+      assert.deepEqual parsed,
+        arguments: []
+        invokeAs: 'value'
