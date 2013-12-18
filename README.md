@@ -3,9 +3,9 @@
 
 > DI Container for Google Closure.
 
-- concise api
+- concise api (resolve A as B with C by D)
 - automatic registration
-- resolving based on types
+- resolving based on type annotations
 - run-time configuration
 - advanced mode compilation friendly
 
@@ -109,6 +109,13 @@ goog.exportSymbol 'app.main', app.main
 ```
 
 Add grunt-closure-dicontainer task after deps.js generation task.
+
+#### Container Configuration
+
+There is a pattern: resolve A as B with C by D.
+A is type to be resolved. B is optional type to be returned. C is optional object for run-time
+configuration, where key is argument name and value is runtime value. D is optional factory method.
+
 Available in [Este](http://github.com/steida/este) soon. Stay tuned.
 
 ## More About DI
