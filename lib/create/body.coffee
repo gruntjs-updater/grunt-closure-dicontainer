@@ -95,11 +95,11 @@ createFactoryFor = (type, definition, diContainerName, isPrivate) ->
         by: (Function|undefined)
       }} */ (this.getRuleFor(#{type}));
       #{createArgsDefinition args}
-      if (this.#{camelize type}) return this.#{camelize type};
-      this.#{camelize type} = /** @type {#{type}} */ (this.createInstance(#{
+      if (this.resolved#{pascalize type}) return this.resolved#{pascalize type};
+      this.resolved#{pascalize type} = /** @type {#{type}} */ (this.createInstance(#{
         type
       }#{if args.length then ', args' else ''}));
-      return this.#{camelize type};
+      return this.resolved#{pascalize type};
     };
   """
   # Remove empty lines.
@@ -113,6 +113,18 @@ createFactoryFor = (type, definition, diContainerName, isPrivate) ->
 pascalize = (str) ->
   str = camelize str
   str.charAt(0).toUpperCase() + str.slice 1
+
+###*
+  @param {string} str foo.bla.Bar
+  @return {string} fooBlaBar
+###
+camelize = (str) ->
+  camelized = ''
+  str.replace /[^\.]+/g, (m, i) ->
+    char = m.charAt 0
+    camelized += if i == 0 then char.toLowerCase() else char.toUpperCase()
+    camelized += m.slice 1
+  camelized
 
 ###*
   @param {Array} args
@@ -147,15 +159,3 @@ createArgsDefinition = (args) ->
       #{lines.join ',\n\n    '}
     ];
   """
-
-###*
-  @param {string} str foo.bla.Bar
-  @return {string} fooBlaBar
-###
-camelize = (str) ->
-  camelized = ''
-  str.replace /[^\.]+/g, (m, i) ->
-    char = m.charAt 0
-    camelized += if i == 0 then char.toLowerCase() else char.toUpperCase()
-    camelized += m.slice 1
-  camelized

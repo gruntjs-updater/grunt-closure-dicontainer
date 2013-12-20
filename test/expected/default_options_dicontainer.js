@@ -61,9 +61,9 @@ app.DiContainer.prototype.resolveApp = function() {
   var args = [
     rule['with'].router || this.resolveAppRouter()
   ];
-  if (this.app) return this.app;
-  this.app = /** @type {App} */ (this.createInstance(App, args));
-  return this.app;
+  if (this.resolvedApp) return this.resolvedApp;
+  this.resolvedApp = /** @type {App} */ (this.createInstance(App, args));
+  return this.resolvedApp;
 };
 
 /**
@@ -76,9 +76,9 @@ app.DiContainer.prototype.resolveAppRouter = function() {
     as: (Object|undefined),
     by: (Function|undefined)
   }} */ (this.getRuleFor(app.Router));
-  if (this.appRouter) return this.appRouter;
-  this.appRouter = /** @type {app.Router} */ (this.createInstance(app.Router));
-  return this.appRouter;
+  if (this.resolvedAppRouter) return this.resolvedAppRouter;
+  this.resolvedAppRouter = /** @type {app.Router} */ (this.createInstance(app.Router));
+  return this.resolvedAppRouter;
 };
 
 /**
