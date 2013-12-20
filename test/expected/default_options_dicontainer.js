@@ -5,6 +5,7 @@ goog.provide('app.DiContainer');
 goog.require('App');
 goog.require('app.Router');
 goog.require('goog.asserts');
+goog.require('goog.functions');
 
 /**
  * @constructor
@@ -38,7 +39,7 @@ app.DiContainer.prototype.configure = function(var_args) {
       'DI container: Rule resolve property must be type of object.');
     goog.asserts.assert(this.ruleIsWellConfigured(rule),
       'DI container: Rule has to define at least one of these props: with, as, by.');
-    goog.asserts.assert(!this.ruleWasYetConfigured(rule),
+    goog.asserts.assert(this.ruleNotYetConfigured(rule),
       'DI container: Rule resolve prop can be configured only once.');
     this.rules.push(rule);
   }
@@ -57,9 +58,12 @@ app.DiContainer.prototype.resolveApp = function() {
     }),
     by: (Function|undefined)
   }} */ (this.getRuleFor(App));
-  return this.app || (this.app = new App(
+  var args = [
     rule['with'].router || this.resolveAppRouter()
-  ));
+  ];
+  if (this.app) return this.app;
+  this.app = /** @type {App} */ (this.createInstance(App, args));
+  return this.app;
 };
 
 /**
@@ -72,7 +76,9 @@ app.DiContainer.prototype.resolveAppRouter = function() {
     as: (Object|undefined),
     by: (Function|undefined)
   }} */ (this.getRuleFor(app.Router));
-  return this.appRouter || (this.appRouter = new app.Router);
+  if (this.appRouter) return this.appRouter;
+  this.appRouter = /** @type {app.Router} */ (this.createInstance(app.Router));
+  return this.appRouter;
 };
 
 /**
@@ -87,6 +93,18 @@ app.DiContainer.prototype.getRuleFor = function(type) {
   rule = rule || {};
   rule['with'] = rule['with'] || {};
   return rule;
+};
+
+/**
+ * @param {!Function} type
+ * @param {Array=} args
+ * @return {?}
+ * @private
+ */
+app.DiContainer.prototype.createInstance = function(type, args) {
+  var createArgs = [type];
+  if (args) createArgs.push.apply(createArgs, args);
+  return goog.functions.create.apply(null, createArgs);
 };
 
 /**
@@ -112,8 +130,8 @@ app.DiContainer.prototype.ruleIsWellConfigured = function(rule) {
  * @return {boolean}
  * @private
  */
-app.DiContainer.prototype.ruleWasYetConfigured = function(newRule) {
-  return this.rules.some(function(rule) {
+app.DiContainer.prototype.ruleNotYetConfigured = function(newRule) {
+  return !this.rules.some(function(rule) {
     return rule.resolve == newRule.resolve;
   });
 };

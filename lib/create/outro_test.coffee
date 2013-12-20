@@ -20,6 +20,18 @@ suite 'outro', ->
       };
 
       /**
+       * @param {!Function} type
+       * @param {Array=} args
+       * @return {?}
+       * @private
+       */
+      app.DiContainer.prototype.createInstance = function(type, args) {
+        var createArgs = [type];
+        if (args) createArgs.push.apply(createArgs, args);
+        return goog.functions.create.apply(null, createArgs);
+      };
+
+      /**
        * @param {Object} rule
        * @return {boolean}
        * @private
@@ -42,8 +54,8 @@ suite 'outro', ->
        * @return {boolean}
        * @private
        */
-      app.DiContainer.prototype.ruleWasYetConfigured = function(newRule) {
-        return this.rules.some(function(rule) {
+      app.DiContainer.prototype.ruleNotYetConfigured = function(newRule) {
+        return !this.rules.some(function(rule) {
           return rule.resolve == newRule.resolve;
         });
       };"""

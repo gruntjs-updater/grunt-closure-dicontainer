@@ -3,6 +3,7 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
   ->
     required =
       'goog.asserts': true
+      'goog.functions': true
     src = []
 
     for type in resolve
@@ -65,6 +66,10 @@ detectWrongUsage = (type, diContainerName, resolving, grunt) ->
     return true
   false
 
+fail = (grunt, message) ->
+  grunt.log.error message
+  grunt.fail.warn 'Factory creating failed.'
+
 ###*
   @param {*} type
   @param {Object} definition
@@ -86,14 +91,15 @@ createFactoryFor = (type, definition, diContainerName, isPrivate) ->
       var rule = /** @type {{
         resolve: (Object),
         as: (Object|undefined),
-        #{createWithFor args}
+        #{createArgsForRule args}
         by: (Function|undefined)
       }} */ (this.getRuleFor(#{type}));
-      return this.#{camelize type} || (this.#{camelize type} = #{
-        if isClass then 'new ' else ''
-      }#{type}#{factorize args}#{
-        if isFunction && !args.length then '()' else ''
-      });
+      #{createArgsDefinition args}
+      if (this.#{camelize type}) return this.#{camelize type};
+      this.#{camelize type} = /** @type {#{type}} */ (this.createInstance(#{
+        type
+      }#{if args.length then ', args' else ''}));
+      return this.#{camelize type};
     };
   """
   # Remove empty lines.
@@ -101,9 +107,17 @@ createFactoryFor = (type, definition, diContainerName, isPrivate) ->
   lines.join '\n'
 
 ###*
+  @param {string} str foo.bla.Bar
+  @return {string} FooBlaBar
+###
+pascalize = (str) ->
+  str = camelize str
+  str.charAt(0).toUpperCase() + str.slice 1
+
+###*
   @param {Array} args
 ###
-createWithFor = (args) ->
+createArgsForRule = (args) ->
   return '' if !args.length
   lines = for arg in args
     "#{arg.name}: (#{arg.typeExpression}|undefined)"
@@ -112,6 +126,26 @@ createWithFor = (args) ->
   with: ({
         #{lines.join ',\n\n      '}
       }),
+  """
+
+###*
+  @param {Array.<string>} args
+  @return {string}
+###
+createArgsDefinition = (args) ->
+  return '' if !args.length
+  lines = args.map (arg) ->
+    line = "rule['with'].#{arg.name} || "
+    if arg.type
+      line += "this.resolve#{pascalize arg.type || ''}()"
+    else
+      line += "void 0"
+    line
+
+  """
+  var args = [
+      #{lines.join ',\n\n    '}
+    ];
   """
 
 ###*
@@ -125,35 +159,3 @@ camelize = (str) ->
     camelized += if i == 0 then char.toLowerCase() else char.toUpperCase()
     camelized += m.slice 1
   camelized
-
-###*
-  @param {string} str foo.bla.Bar
-  @return {string} FooBlaBar
-###
-pascalize = (str) ->
-  str = camelize str
-  str.charAt(0).toUpperCase() + str.slice 1
-
-###*
-  @param {Array.<string>} args
-  @return {string}
-###
-factorize = (args) ->
-  return '' if !args.length
-  lines = args.map (arg) ->
-    line = "rule['with'].#{arg.name} || "
-    if arg.type
-      line += "this.resolve#{pascalize arg.type || ''}()"
-    else
-      line += "void 0"
-    line
-
-  """
-  (
-      #{lines.join ',\n\n    '}
-    )
-  """
-
-fail = (grunt, message) ->
-  grunt.log.error message
-  grunt.fail.warn 'Factory creating failed.'

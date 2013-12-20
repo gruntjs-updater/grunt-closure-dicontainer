@@ -17,6 +17,18 @@ module.exports = (diContainerName) ->
       };
 
       /**
+       * @param {!Function} type
+       * @param {Array=} args
+       * @return {?}
+       * @private
+       */
+      #{diContainerName}.prototype.createInstance = function(type, args) {
+        var createArgs = [type];
+        if (args) createArgs.push.apply(createArgs, args);
+        return goog.functions.create.apply(null, createArgs);
+      };
+
+      /**
        * @param {Object} rule
        * @return {boolean}
        * @private
@@ -39,8 +51,8 @@ module.exports = (diContainerName) ->
        * @return {boolean}
        * @private
        */
-      #{diContainerName}.prototype.ruleWasYetConfigured = function(newRule) {
-        return this.rules.some(function(rule) {
+      #{diContainerName}.prototype.ruleNotYetConfigured = function(newRule) {
+        return !this.rules.some(function(rule) {
           return rule.resolve == newRule.resolve;
         });
       };

@@ -46,7 +46,7 @@ module.exports = (diContainerName) ->
             'DI container: Rule resolve property must be type of object.');
           goog.asserts.assert(this.ruleIsWellConfigured(rule),
             'DI container: Rule has to define at least one of these props: with, as, by.');
-          goog.asserts.assert(!this.ruleWasYetConfigured(rule),
+          goog.asserts.assert(this.ruleNotYetConfigured(rule),
             'DI container: Rule resolve prop can be configured only once.');
           this.rules.push(rule);
         }

@@ -95,13 +95,16 @@ suite 'body', ->
           }),
           by: (Function|undefined)
         }} */ (this.getRuleFor(app.A));
-        return this.appA || (this.appA = new app.A(
+        var args = [
           rule['with'].b || this.resolveB(),
           rule['with'].bb || this.resolveB(),
           rule['with'].c || void 0,
           rule['with'].d || this.resolveElement(),
           rule['with'].e || void 0
-        ));
+        ];
+        if (this.appA) return this.appA;
+        this.appA = /** @type {app.A} */ (this.createInstance(app.A, args));
+        return this.appA;
       };
 
       /**
@@ -114,7 +117,9 @@ suite 'body', ->
           as: (Object|undefined),
           by: (Function|undefined)
         }} */ (this.getRuleFor(B));
-        return this.b || (this.b = new B);
+        if (this.b) return this.b;
+        this.b = /** @type {B} */ (this.createInstance(B));
+        return this.b;
       };
 
       /**
@@ -127,14 +132,20 @@ suite 'body', ->
           as: (Object|undefined),
           by: (Function|undefined)
         }} */ (this.getRuleFor(Element));
-        return this.element || (this.element = new Element);
+        if (this.element) return this.element;
+        this.element = /** @type {Element} */ (this.createInstance(Element));
+        return this.element;
       };
     """
 
   test 'should create required', ->
     resolveFactory()
     assert.deepEqual resolved.required, [
-      'goog.asserts', 'app.A', 'B', 'Element'
+      'goog.asserts'
+      'goog.functions'
+      'app.A'
+      'B'
+      'Element'
     ]
 
   test 'should create unique required', ->
@@ -151,7 +162,7 @@ suite 'body', ->
         arguments: []
     resolveFactory()
     assert.deepEqual resolved.required, [
-      'goog.asserts', 'app.A', 'B'
+      'goog.asserts', 'goog.functions', 'app.A', 'B'
     ]
 
   test 'should do not generate code for missing type definition', ->
@@ -196,37 +207,3 @@ suite 'body', ->
         arguments: []
     resolveFactory()
     assertErrorAndWarnCalls calls
-
-  test 'should create factory for factory', ->
-    resolve = ['create']
-    resolveFactory()
-    assert.equal resolved.src, """
-      /**
-       * Factory for 'create'.
-       */
-      app.DiContainer.prototype.resolveCreate = function() {
-        var rule = /** @type {{
-          resolve: (Object),
-          as: (Object|undefined),
-          by: (Function|undefined)
-        }} */ (this.getRuleFor(create));
-        return this.create || (this.create = create());
-      };
-    """
-
-  test 'should create factory for value', ->
-    resolve = ['enum']
-    resolveFactory()
-    assert.equal resolved.src, """
-      /**
-       * Factory for 'enum'.
-       */
-      app.DiContainer.prototype.resolveEnum = function() {
-        var rule = /** @type {{
-          resolve: (Object),
-          as: (Object|undefined),
-          by: (Function|undefined)
-        }} */ (this.getRuleFor(enum));
-        return this.enum || (this.enum = enum);
-      };
-    """
