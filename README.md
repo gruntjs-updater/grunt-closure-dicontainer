@@ -75,7 +75,7 @@ Prefix for `deps.js` processing.
 
 ### Usage Example
 
-How to use DI container in you app:
+How to use DI container in your app with various resolving configurations.
 
 ```coffee
 ###*
@@ -96,11 +96,13 @@ app.main = ->
     resolve: este.storage.IStorage
     as: este.storage.Local
   ,
-    resolve: foo.Bla
+    resolve: foo.ui.Lightbox
+    by: (lightbox) ->
+      lightbox.setSomething()
+  ,
+    resolve: foo.IFoo
     by: ->
-      bla = new foo.Bla
-      bla.setSomething()
-      bla
+      new foo.Foo
  
   app = container.resolveApp()
   app.start()
