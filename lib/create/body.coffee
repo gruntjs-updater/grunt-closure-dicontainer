@@ -98,7 +98,7 @@ createFactoryFor = (type, definition, diContainerName, isPrivate) ->
       if (this.resolved#{pascalize type}) return this.resolved#{pascalize type};
       this.resolved#{pascalize type} = /** @type {#{type}} */ (this.createInstance(#{
         type
-      }#{if args.length then ', args' else ''}));
+      }, rule#{if args.length then ', args' else ''}));
       return this.resolved#{pascalize type};
     };
   """

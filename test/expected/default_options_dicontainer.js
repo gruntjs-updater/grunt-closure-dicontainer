@@ -62,7 +62,7 @@ app.DiContainer.prototype.resolveApp = function() {
     rule['with'].router || this.resolveAppRouter()
   ];
   if (this.resolvedApp) return this.resolvedApp;
-  this.resolvedApp = /** @type {App} */ (this.createInstance(App, args));
+  this.resolvedApp = /** @type {App} */ (this.createInstance(App, rule, args));
   return this.resolvedApp;
 };
 
@@ -77,7 +77,7 @@ app.DiContainer.prototype.resolveAppRouter = function() {
     by: (Function|undefined)
   }} */ (this.getRuleFor(app.Router));
   if (this.resolvedAppRouter) return this.resolvedAppRouter;
-  this.resolvedAppRouter = /** @type {app.Router} */ (this.createInstance(app.Router));
+  this.resolvedAppRouter = /** @type {app.Router} */ (this.createInstance(app.Router, rule));
   return this.resolvedAppRouter;
 };
 
@@ -126,12 +126,18 @@ app.DiContainer.prototype.getRuleFor = function(type) {
 
 /**
  * @param {!Function} type
+ * @param {Object} rule
  * @param {Array=} args
  * @return {?}
  * @private
  */
-app.DiContainer.prototype.createInstance = function(type, args) {
-  var createArgs = [type];
+app.DiContainer.prototype.createInstance = function(type, rule, args) {
+  if (rule.by && !rule.by.length)
+    return rule.by();
+  var createArgs = [rule.as || type];
   if (args) createArgs.push.apply(createArgs, args);
-  return goog.functions.create.apply(null, createArgs);
+  var instance = goog.functions.create.apply(null, createArgs);
+  if (rule.by && rule.by.length)
+    rule.by(instance);
+  return instance;
 };

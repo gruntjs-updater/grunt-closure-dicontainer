@@ -103,7 +103,7 @@ suite 'body', ->
           rule['with'].e || void 0
         ];
         if (this.resolvedAppA) return this.resolvedAppA;
-        this.resolvedAppA = /** @type {app.A} */ (this.createInstance(app.A, args));
+        this.resolvedAppA = /** @type {app.A} */ (this.createInstance(app.A, rule, args));
         return this.resolvedAppA;
       };
 
@@ -118,7 +118,7 @@ suite 'body', ->
           by: (Function|undefined)
         }} */ (this.getRuleFor(B));
         if (this.resolvedB) return this.resolvedB;
-        this.resolvedB = /** @type {B} */ (this.createInstance(B));
+        this.resolvedB = /** @type {B} */ (this.createInstance(B, rule));
         return this.resolvedB;
       };
 
@@ -133,7 +133,7 @@ suite 'body', ->
           by: (Function|undefined)
         }} */ (this.getRuleFor(Element));
         if (this.resolvedElement) return this.resolvedElement;
-        this.resolvedElement = /** @type {Element} */ (this.createInstance(Element));
+        this.resolvedElement = /** @type {Element} */ (this.createInstance(Element, rule));
         return this.resolvedElement;
       };
     """
