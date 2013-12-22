@@ -127,5 +127,5 @@ Available in [Este](http://github.com/steida/este) soon. Stay tuned.
   - [Dependency Injection in .NET](http://www.manning.com/seemann)
 
 ## Release History
-  2013-12-22   v0.3.0   New resolving rules rule.as and rule.by.
-  2013-12-17   v0.2.2   Work in progress, not yet officially released. ([Pre-release announcement](https://groups.google.com/d/msg/closure-library-discuss/A4U4I1W8bhI/6HZ5Napl6GEJ))
+  * 2013-12-22   v0.3.0   Add resolving rules rule.as and rule.by.
+  * 2013-12-17   v0.2.2   Work in progress, not yet officially released. ([Pre-release announcement](https://groups.google.com/d/msg/closure-library-discuss/A4U4I1W8bhI/6HZ5Napl6GEJ))
