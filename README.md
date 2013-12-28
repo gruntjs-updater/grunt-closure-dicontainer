@@ -1,7 +1,7 @@
 # grunt-closure-dicontainer
 [![Build Status](https://secure.travis-ci.org/steida/grunt-closure-dicontainer.png?branch=master)](http://travis-ci.org/steida/grunt-closure-dicontainer) [![Dependency Status](https://david-dm.org/steida/grunt-closure-dicontainer.png)](https://david-dm.org/steida/grunt-closure-dicontainer) [![devDependency Status](https://david-dm.org/steida/grunt-closure-dicontainer/dev-status.png)](https://david-dm.org/steida/grunt-closure-dicontainer#info=devDependencies)
 
-> DI Container for Google Closure.
+> Dependency Injection Container for Google Closure Library
 
 - concise api (resolve A as B with C by D)
 - automatic registration
