@@ -2,13 +2,13 @@ typeParser = require './typeparser'
 
 suite 'typeParser', ->
 
-  deps = null
+  typesPaths = null
   sources = null
   readFileSync = null
   grunt = null
 
   setup ->
-    deps =
+    typesPaths =
       'app.A': 'app/a.js'
       'B': 'app/b.js'
     sources =
@@ -34,7 +34,7 @@ suite 'typeParser', ->
       fail: warn: ->
 
   parse = (type, resolving) ->
-    typeParser(deps, readFileSync, grunt) type, resolving
+    typeParser(readFileSync, grunt, typesPaths) type, resolving
 
   arrangeErrorWarnCalls = (errorMessage) ->
     calls = ''
@@ -51,8 +51,8 @@ suite 'typeParser', ->
     assert.isNull parsed
 
   arrangeType = (type, src) ->
-    deps[type] = 'foo'
-    sources['foo'] = src
+    typesPaths[type] = type
+    sources[type] = src
 
   test 'should parse app.A', ->
     parsed = parse 'app.A'
@@ -139,7 +139,7 @@ suite 'typeParser', ->
       invokeAs: 'class'
 
   test 'should handle NonNullableType types', ->
-    deps['Foo'] = true
+    typesPaths['Foo'] = true
     arrangeType 'app.D', """
       /**
        * @param {!Foo} foo
@@ -255,3 +255,17 @@ suite 'typeParser', ->
       assert.deepEqual parsed,
         arguments: []
         invokeAs: 'value'
+
+  suite 'interface', ->
+    test 'should be invoked as interface', ->
+      arrangeType 'Interface', """
+        /**
+         * @interface
+         */
+        Interface = function(
+
+      """
+      parsed = parse 'Interface'
+      assert.deepEqual parsed,
+        arguments: []
+        invokeAs: 'interface'

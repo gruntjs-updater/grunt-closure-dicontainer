@@ -1,10 +1,10 @@
 esprima = require 'esprima'
 doctrine = require 'doctrine'
 
-module.exports = (deps, readFileSync, grunt) ->
+module.exports = (readFileSync, grunt, typesPaths) ->
 
-  (type, resolving) ->
-    file = deps[type]
+  (type) ->
+    file = typesPaths[type]
     return null if !file
 
     try
@@ -17,7 +17,7 @@ module.exports = (deps, readFileSync, grunt) ->
     if !annotation
       return null
 
-    getDefinition annotation, deps
+    getDefinition annotation, typesPaths
 
 getAnnotation = (file, src, type, grunt) ->
   typeIndex = src.indexOf "#{type} ="
@@ -56,35 +56,38 @@ stripCodeAfterAnnotation = (src, typeIndex) ->
   # For namespace-less types.
   src.replace /var\s+$/g, ''
 
-getDefinition = (annotation, deps) ->
+getDefinition = (annotation, typesPaths) ->
   parsed = doctrine.parse "/*#{annotation}*/", unwrap: true
 
-  arguments: getArguments parsed.tags, deps
+  arguments: getArguments parsed.tags, typesPaths
   invokeAs: invokeAs parsed.tags
 
-getArguments = (tags, deps) ->
+getArguments = (tags, typesPaths) ->
   for tag in tags
     continue if tag.title != 'param'
     continue if tag.type.type == 'OptionalType'
 
     name: tag.name
     typeExpression: doctrine.type.stringify tag.type, compact: true
-    type: do ->
-      type = getArgumentType tag
-      if deps[type] then type else null
+    type: getArgumentType tag, typesPaths
 
-getArgumentType = (tag) ->
+getArgumentType = (tag, typesPaths) ->
   return null if tag.type.type not in [
     'NameExpression'
     'OptionalType'
     'NonNullableType'
   ]
-  return tag.type.name if tag.type.type == 'NameExpression'
-  tag.type.expression.name
+  type = if tag.type.type == 'NameExpression'
+    tag.type.name
+  else
+    tag.type.expression.name
+  return null if !typesPaths[type]
+  type
 
 invokeAs = (tags) ->
   for tag in tags
     return 'class' if tag.title == 'constructor'
+    return 'interface' if tag.title == 'interface'
     return 'function' if tag.title == 'type' && (
       tag.type.name == 'Function' ||
       tag.type.type == 'FunctionType')

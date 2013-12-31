@@ -1,4 +1,4 @@
-module.exports = (diContainerName, resolve, typeParser, grunt) ->
+module.exports = (diContainerName, resolve, typeParser, grunt, requiredBy) ->
 
   ->
     required =
@@ -11,16 +11,15 @@ module.exports = (diContainerName, resolve, typeParser, grunt) ->
         return if detectCircularDependency type, resolving, grunt
         return if detectWrongUsage type, diContainerName, resolving, grunt
         return if required[type]
+        required[type] = true
 
-        definition = typeParser type, resolving
+        definition = typeParser type
         return if !definition
 
-        required[type] = true
         resolving.push type
-
-        factory = createFactoryFor type, definition, diContainerName,
-          resolving.length > 1
-        src.push factory
+        isPrivate = resolving.length > 1
+        factorySrc = createFactory type, definition, diContainerName, isPrivate
+        src.push factorySrc
 
         for argument in definition.arguments
           continue if !argument.type
@@ -76,15 +75,14 @@ fail = (grunt, message) ->
   @param {string} diContainerName
   @param {boolean} isPrivate Why private? To prevent using DI container as
     service locator.
+  @return {string}
 ###
-createFactoryFor = (type, definition, diContainerName, isPrivate) ->
+createFactory = (type, definition, diContainerName, isPrivate) ->
   args = definition.arguments
-  isClass = definition.invokeAs == 'class'
-  isFunction = definition.invokeAs == 'function'
   src = """
     /**
      #{if !isPrivate then "* Factory for '#{type}'." else ''}
-     #{if isClass then "* @return {#{type}}" else ''}
+     * @return {#{type}}
      #{if isPrivate then '* @private' else ''}
      */
     #{diContainerName}.prototype.resolve#{pascalize type} = function() {
