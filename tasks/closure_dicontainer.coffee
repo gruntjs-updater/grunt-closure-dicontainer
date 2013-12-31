@@ -29,28 +29,30 @@ module.exports = (grunt) ->
       prefix: '../../../../'
 
     @files.forEach (file) =>
-      deps = getDeps file
-      container = dicontainer options, deps, grunt
+      typesPaths = {}
+      requiredBy = {}
+      parseDeps file, typesPaths, requiredBy
+      container = dicontainer options, grunt, typesPaths, requiredBy
       return if @errorCount
       grunt.file.write file.dest, container.code
       updateDeps file, container.required, options.prefix, options.name
       grunt.log.writeln "File \"#{file.dest}\" created."
 
-  getDeps = (file) ->
-    deps = {}
-    file.src.filter(notExistingFiles).forEach (file) -> addDeps deps, file
-    deps
+  parseDeps = (file, typesPaths, requiredBy) ->
+    goog = addDependency: (file, namespaces, requires) ->
+      for namespace in namespaces
+        typesPaths[namespace] = unrelativize file
+      for require_ in requires
+        requiredBy[require_] = (requiredBy[require_] || []).concat namespaces
+      return
+    file.src.filter(notExistingFiles).forEach (file) ->
+      eval grunt.file.read file
+    typesPaths
 
   notExistingFiles = (file) ->
     return true if grunt.file.exists file
     grunt.log.warn "Source file \"#{file}\" not found."
     false
-
-  addDeps = (deps, file) ->
-    goog = addDependency: (file, namespaces) ->
-      deps[namespace] = unrelativize file for namespace in namespaces
-      return
-    eval grunt.file.read file
 
   # Remove '../../../../'.
   unrelativize = (file) ->
