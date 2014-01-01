@@ -5,6 +5,10 @@ module.exports = (diContainerName, resolve, typeParser, grunt, requiredBy) ->
       'goog.asserts': true
       'goog.functions': true
     src = []
+    typeParserCache = {}
+    typeParserCached = (type) ->
+      return typeParserCache[type] if type of typeParserCache
+      typeParserCache[type] = typeParser type
 
     for type in resolve
       do (type, resolving = []) ->
@@ -13,7 +17,7 @@ module.exports = (diContainerName, resolve, typeParser, grunt, requiredBy) ->
         return if required[type]
         required[type] = true
 
-        definition = typeParser type
+        definition = typeParserCached type
         return if !definition
 
         resolving.push type
@@ -21,7 +25,7 @@ module.exports = (diContainerName, resolve, typeParser, grunt, requiredBy) ->
 
         if definition.invokeAs == 'interface'
           typesToResolve = requiredBy[type].filter (requiredType) ->
-            typeParser(requiredType).implements.indexOf(type) != -1
+            typeParserCached(requiredType).implements.indexOf(type) != -1
           src.push createInterfaceResolver type, diContainerName, typesToResolve
         else
           typesToResolve = (
