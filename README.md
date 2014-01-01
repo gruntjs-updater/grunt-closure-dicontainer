@@ -4,8 +4,8 @@
 > Dependency Injection Container for Google Closure Library
 
 - concise api (resolve A as B with C by D)
-- automatic registration
-- resolving based on type annotations
+- automatic types registration
+- resolving based on strong types parsed from annotations
 - run-time configuration
 - advanced mode compilation friendly
 
@@ -93,7 +93,7 @@ app.main = ->
     resolve: App
     with: element: document.body
   ,
-    resolve: este.storage.IStorage
+    resolve: este.storage.Storage
     as: este.storage.Local
   ,
     resolve: foo.ui.Lightbox
@@ -114,7 +114,8 @@ Add grunt-closure-dicontainer task after deps.js generation task.
 
 #### Container Configuration
 
-There is a pattern: resolve A as B with C by D.
+There is a pattern: **Resolve A as B with C by D**.
+
 A is type to be resolved. B is optional type to be returned. C is optional object for run-time
 configuration, where key is argument name and value is runtime value. D is optional factory method.
 
@@ -127,5 +128,6 @@ Available in [Este](http://github.com/steida/este) soon. Stay tuned.
   - [Dependency Injection in .NET](http://www.manning.com/seemann)
 
 ## Release History
+  * 2014-01-01   v0.4.0   Add interface resolving.
   * 2013-12-22   v0.3.0   Add resolving rules rule.as and rule.by.
   * 2013-12-17   v0.2.2   Work in progress, not yet officially released. ([Pre-release announcement](https://groups.google.com/d/msg/closure-library-discuss/A4U4I1W8bhI/6HZ5Napl6GEJ))
