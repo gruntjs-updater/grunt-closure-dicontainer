@@ -31,15 +31,17 @@ module.exports = (diContainerName) ->
     };
 
     /**
+     * @param {*} type
+     * @return {Object}
      * @private
      */
     #{diContainerName}.prototype.getRuleFor = function(type) {
-      var rule;
+      var rule = {};
       for (var i = 0; i < this.rules.length; i++) {
+        if (this.rules[i].resolve != type) continue;
         rule = this.rules[i];
-        if (rule.resolve == type) break;
+        break;
       }
-      rule = rule || {};
       rule['with'] = rule['with'] || {};
       return rule;
     };

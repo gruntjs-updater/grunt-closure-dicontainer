@@ -31,15 +31,17 @@ module.exports = (grunt) ->
     @files.forEach (file) =>
       typesPaths = {}
       requiredBy = {}
-      parseDeps file, typesPaths, requiredBy
+      parseDeps options.name, file, typesPaths, requiredBy
       container = dicontainer options, grunt, typesPaths, requiredBy
       return if @errorCount
       grunt.file.write file.dest, container.code
       updateDeps file, container.required, options.prefix, options.name
       grunt.log.writeln "File \"#{file.dest}\" created."
 
-  parseDeps = (file, typesPaths, requiredBy) ->
+  parseDeps = (diContainerName, file, typesPaths, requiredBy) ->
     goog = addDependency: (file, namespaces, requires) ->
+      namespaces = namespaces.filter (namespace) ->
+        namespace != diContainerName
       for namespace in namespaces
         typesPaths[namespace] = unrelativize file
       for require_ in requires

@@ -7,6 +7,7 @@ suite 'body', ->
   types = null
   typeParser = null
   grunt = null
+  requiredBy = null
   factory = null
   resolved = null
 
@@ -35,6 +36,10 @@ suite 'body', ->
           name: 'e'
           typeExpression: 'Document'
           type: null
+        ,
+          name: 'f'
+          typeExpression: 'F'
+          type: 'F'
         ]
         invokeAs: 'class'
       'B':
@@ -49,17 +54,29 @@ suite 'body', ->
       'enum':
         arguments: []
         invokeAs: 'value'
+      'F':
+        arguments: []
+        invokeAs: 'interface'
+      'G':
+        arguments: []
+        invokeAs: 'class'
+        implements: ['F']
 
     typeParser = (type) ->
       types[type]
+
     grunt =
       log: error: ->
       fail: warn: ->
+
+    requiredBy =
+      'F': ['G']
+
     factory = null
     resolved = null
 
   resolveFactory = ->
-    factory = body diContainerName, resolve, typeParser, grunt
+    factory = body diContainerName, resolve, typeParser, grunt, requiredBy
     resolved = factory()
 
   arrangeErrorWarnCalls = (errorMessage) ->
@@ -80,9 +97,10 @@ suite 'body', ->
     assert.equal resolved.src, """
       /**
        * Factory for 'app.A'.
+       * @param {Object=} opt_rule
        * @return {app.A}
        */
-      app.DiContainer.prototype.resolveAppA = function() {
+      app.DiContainer.prototype.resolveAppA = function(opt_rule) {
         var rule = /** @type {{
           resolve: (Object),
           as: (Object|undefined),
@@ -91,16 +109,18 @@ suite 'body', ->
             bb: (B|undefined),
             c: (Array.<string>|undefined),
             d: (Element|undefined),
-            e: (Document|undefined)
+            e: (Document|undefined),
+            f: (F|undefined)
           }),
           by: (Function|undefined)
-        }} */ (this.getRuleFor(app.A));
+        }} */ (opt_rule || this.getRuleFor(app.A));
         var args = [
-          rule['with'].b || this.resolveB(),
-          rule['with'].bb || this.resolveB(),
-          rule['with'].c || void 0,
-          rule['with'].d || this.resolveElement(),
-          rule['with'].e || void 0
+          rule['with'].b !== undefined ? rule['with'].b : this.resolveB(),
+          rule['with'].bb !== undefined ? rule['with'].bb : this.resolveB(),
+          rule['with'].c !== undefined ? rule['with'].c : void 0,
+          rule['with'].d !== undefined ? rule['with'].d : this.resolveElement(),
+          rule['with'].e !== undefined ? rule['with'].e : void 0,
+          rule['with'].f !== undefined ? rule['with'].f : this.resolveF()
         ];
         if (this.resolvedAppA) return this.resolvedAppA;
         this.resolvedAppA = /** @type {app.A} */ (this.createInstance(app.A, rule, args));
@@ -108,33 +128,67 @@ suite 'body', ->
       };
 
       /**
+       * Factory for 'B'.
+       * @param {Object=} opt_rule
        * @return {B}
        * @private
        */
-      app.DiContainer.prototype.resolveB = function() {
+      app.DiContainer.prototype.resolveB = function(opt_rule) {
         var rule = /** @type {{
           resolve: (Object),
           as: (Object|undefined),
           by: (Function|undefined)
-        }} */ (this.getRuleFor(B));
+        }} */ (opt_rule || this.getRuleFor(B));
         if (this.resolvedB) return this.resolvedB;
         this.resolvedB = /** @type {B} */ (this.createInstance(B, rule));
         return this.resolvedB;
       };
 
       /**
+       * Factory for 'Element'.
+       * @param {Object=} opt_rule
        * @return {Element}
        * @private
        */
-      app.DiContainer.prototype.resolveElement = function() {
+      app.DiContainer.prototype.resolveElement = function(opt_rule) {
         var rule = /** @type {{
           resolve: (Object),
           as: (Object|undefined),
           by: (Function|undefined)
-        }} */ (this.getRuleFor(Element));
+        }} */ (opt_rule || this.getRuleFor(Element));
         if (this.resolvedElement) return this.resolvedElement;
         this.resolvedElement = /** @type {Element} */ (this.createInstance(Element, rule));
         return this.resolvedElement;
+      };
+
+      /**
+       * Factory for 'F' interface.
+       * @return {F}
+       * @private
+       */
+      app.DiContainer.prototype.resolveF = function() {
+        var rule = this.getRuleFor(F);
+        switch (rule.as || G) {
+          case G: return this.resolveG(rule);
+          default: return null;
+        }
+      };
+
+      /**
+       * Factory for 'G'.
+       * @param {Object=} opt_rule
+       * @return {G}
+       * @private
+       */
+      app.DiContainer.prototype.resolveG = function(opt_rule) {
+        var rule = /** @type {{
+          resolve: (Object),
+          as: (Object|undefined),
+          by: (Function|undefined)
+        }} */ (opt_rule || this.getRuleFor(G));
+        if (this.resolvedG) return this.resolvedG;
+        this.resolvedG = /** @type {G} */ (this.createInstance(G, rule));
+        return this.resolvedG;
       };
     """
 
@@ -146,6 +200,8 @@ suite 'body', ->
       'app.A'
       'B'
       'Element'
+      'F'
+      'G'
     ]
 
   test 'should create unique required', ->

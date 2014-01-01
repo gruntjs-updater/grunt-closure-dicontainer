@@ -67,12 +67,14 @@ suite 'typeParser', ->
         type: 'B'
       ]
       invokeAs: 'class'
+      implements: []
 
   test 'should parse B', ->
     parsed = parse 'B'
     assert.deepEqual parsed,
       arguments: []
       invokeAs: 'class'
+      implements: []
 
   test 'should handle missing file', ->
     calls = arrangeErrorWarnCalls "File 'app/a.js' failed to load."
@@ -137,6 +139,7 @@ suite 'typeParser', ->
     assert.deepEqual parsed,
       arguments: []
       invokeAs: 'class'
+      implements: []
 
   test 'should handle NonNullableType types', ->
     typesPaths['Foo'] = true
@@ -155,6 +158,7 @@ suite 'typeParser', ->
         type: 'Foo'
       ]
       invokeAs: 'class'
+      implements: []
 
   test 'should ignore not yet resolvable', ->
     arrangeType 'Foo', """
@@ -187,6 +191,7 @@ suite 'typeParser', ->
         type: null
       ]
       invokeAs: 'class'
+      implements: []
 
   test 'should ignore resolvable but not provided', ->
     arrangeType 'Foo', """
@@ -204,6 +209,7 @@ suite 'typeParser', ->
         type: null
       ]
       invokeAs: 'class'
+      implements: []
 
   suite 'invoke', ->
     test 'should detect class', ->
@@ -217,6 +223,7 @@ suite 'typeParser', ->
       assert.deepEqual parsed,
         arguments: []
         invokeAs: 'class'
+        implements: []
 
     test 'should detect function', ->
       arrangeType 'createFoo', """
@@ -229,6 +236,7 @@ suite 'typeParser', ->
       assert.deepEqual parsed,
         arguments: []
         invokeAs: 'function'
+        implements: []
 
     test 'should detect function type', ->
       arrangeType 'createFoo', """
@@ -241,6 +249,7 @@ suite 'typeParser', ->
       assert.deepEqual parsed,
         arguments: []
         invokeAs: 'function'
+        implements: []
 
     test 'should return value if not resolved', ->
       arrangeType 'createFoo', """
@@ -255,6 +264,7 @@ suite 'typeParser', ->
       assert.deepEqual parsed,
         arguments: []
         invokeAs: 'value'
+        implements: []
 
   suite 'interface', ->
     test 'should be invoked as interface', ->
@@ -269,3 +279,21 @@ suite 'typeParser', ->
       assert.deepEqual parsed,
         arguments: []
         invokeAs: 'interface'
+        implements: []
+
+  suite 'implements', ->
+    test 'should be invoked as interface', ->
+      arrangeType 'Implements', """
+        /**
+         * @constructor
+         * @implements {A}
+         * @implements {B}
+         */
+        Implements = function(
+
+      """
+      parsed = parse 'Implements'
+      assert.deepEqual parsed,
+        arguments: []
+        invokeAs: 'class'
+        implements: ['A', 'B']

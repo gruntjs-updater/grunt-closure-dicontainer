@@ -47,9 +47,10 @@ app.DiContainer.prototype.configure = function(var_args) {
 
 /**
  * Factory for 'App'.
+ * @param {Object=} opt_rule
  * @return {App}
  */
-app.DiContainer.prototype.resolveApp = function() {
+app.DiContainer.prototype.resolveApp = function(opt_rule) {
   var rule = /** @type {{
     resolve: (Object),
     as: (Object|undefined),
@@ -57,9 +58,9 @@ app.DiContainer.prototype.resolveApp = function() {
       router: (app.Router|undefined)
     }),
     by: (Function|undefined)
-  }} */ (this.getRuleFor(App));
+  }} */ (opt_rule || this.getRuleFor(App));
   var args = [
-    rule['with'].router || this.resolveAppRouter()
+    rule['with'].router !== undefined ? rule['with'].router : this.resolveAppRouter()
   ];
   if (this.resolvedApp) return this.resolvedApp;
   this.resolvedApp = /** @type {App} */ (this.createInstance(App, rule, args));
@@ -67,15 +68,17 @@ app.DiContainer.prototype.resolveApp = function() {
 };
 
 /**
+ * Factory for 'app.Router'.
+ * @param {Object=} opt_rule
  * @return {app.Router}
  * @private
  */
-app.DiContainer.prototype.resolveAppRouter = function() {
+app.DiContainer.prototype.resolveAppRouter = function(opt_rule) {
   var rule = /** @type {{
     resolve: (Object),
     as: (Object|undefined),
     by: (Function|undefined)
-  }} */ (this.getRuleFor(app.Router));
+  }} */ (opt_rule || this.getRuleFor(app.Router));
   if (this.resolvedAppRouter) return this.resolvedAppRouter;
   this.resolvedAppRouter = /** @type {app.Router} */ (this.createInstance(app.Router, rule));
   return this.resolvedAppRouter;
@@ -111,15 +114,17 @@ app.DiContainer.prototype.ruleNotYetConfigured = function(newRule) {
 };
 
 /**
+ * @param {*} type
+ * @return {Object}
  * @private
  */
 app.DiContainer.prototype.getRuleFor = function(type) {
-  var rule;
+  var rule = {};
   for (var i = 0; i < this.rules.length; i++) {
+    if (this.rules[i].resolve != type) continue;
     rule = this.rules[i];
-    if (rule.resolve == type) break;
+    break;
   }
-  rule = rule || {};
   rule['with'] = rule['with'] || {};
   return rule;
 };

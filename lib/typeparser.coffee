@@ -17,7 +17,7 @@ module.exports = (readFileSync, grunt, typesPaths) ->
     if !annotation
       return null
 
-    getDefinition annotation, typesPaths
+    getDefinition type, annotation, typesPaths
 
 getAnnotation = (file, src, type, grunt) ->
   typeIndex = src.indexOf "#{type} ="
@@ -56,11 +56,12 @@ stripCodeAfterAnnotation = (src, typeIndex) ->
   # For namespace-less types.
   src.replace /var\s+$/g, ''
 
-getDefinition = (annotation, typesPaths) ->
+getDefinition = (type, annotation, typesPaths) ->
   parsed = doctrine.parse "/*#{annotation}*/", unwrap: true
 
   arguments: getArguments parsed.tags, typesPaths
-  invokeAs: invokeAs parsed.tags
+  invokeAs: getInvokeAs parsed.tags
+  implements: getImplements parsed.tags
 
 getArguments = (tags, typesPaths) ->
   for tag in tags
@@ -84,7 +85,7 @@ getArgumentType = (tag, typesPaths) ->
   return null if !typesPaths[type]
   type
 
-invokeAs = (tags) ->
+getInvokeAs = (tags) ->
   for tag in tags
     return 'class' if tag.title == 'constructor'
     return 'interface' if tag.title == 'interface'
@@ -92,6 +93,13 @@ invokeAs = (tags) ->
       tag.type.name == 'Function' ||
       tag.type.type == 'FunctionType')
   'value'
+
+getImplements = (tags) ->
+  types = []
+  for tag in tags
+    continue if tag.title != 'implements'
+    types.push tag.type.name
+  types
 
 fail = (grunt, message) ->
   grunt.log.error message

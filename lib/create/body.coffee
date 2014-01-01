@@ -17,13 +17,20 @@ module.exports = (diContainerName, resolve, typeParser, grunt, requiredBy) ->
         return if !definition
 
         resolving.push type
-        isPrivate = resolving.length > 1
-        factorySrc = createFactory type, definition, diContainerName, isPrivate
-        src.push factorySrc
+        typesToResolve = null
 
-        for argument in definition.arguments
-          continue if !argument.type
-          arguments.callee argument.type, resolving.slice 0
+        if definition.invokeAs == 'interface'
+          typesToResolve = requiredBy[type].filter (requiredType) ->
+            typeParser(requiredType).implements.indexOf(type) != -1
+          src.push createInterfaceResolver type, diContainerName, typesToResolve
+        else
+          typesToResolve = (
+            arg.type for arg in definition.arguments when arg.type)
+          isPrivate = resolving.length > 1
+          src.push createTypeResolver type, definition, diContainerName, isPrivate
+
+        for typeToResolve in typesToResolve
+          arguments.callee typeToResolve, resolving.slice 0
 
         return
 
@@ -70,28 +77,48 @@ fail = (grunt, message) ->
   grunt.fail.warn 'Factory creating failed.'
 
 ###*
-  @param {*} type
+  @param {string} type
+  @param {string} diContainerName
+  @param {Array.<string>} types
+  @return {string}
+###
+createInterfaceResolver = (type, diContainerName, types) ->
+  removeEmptyLines """
+    /**
+     * Factory for '#{type}' interface.
+     * @return {#{type}}
+     * @private
+     */
+    #{diContainerName}.prototype.resolve#{pascalize type} = function() {
+      var rule = this.getRuleFor(#{type});
+      #{createInterfaceImplementationSwitch type, types}
+    };
+  """
+
+###*
+  @param {string} type
   @param {Object} definition
   @param {string} diContainerName
   @param {boolean} isPrivate Why private? To prevent using DI container as
     service locator.
   @return {string}
 ###
-createFactory = (type, definition, diContainerName, isPrivate) ->
+createTypeResolver = (type, definition, diContainerName, isPrivate) ->
   args = definition.arguments
-  src = """
+  removeEmptyLines """
     /**
-     #{if !isPrivate then "* Factory for '#{type}'." else ''}
+     * Factory for '#{type}'.
+     * @param {Object=} opt_rule
      * @return {#{type}}
      #{if isPrivate then '* @private' else ''}
      */
-    #{diContainerName}.prototype.resolve#{pascalize type} = function() {
+    #{diContainerName}.prototype.resolve#{pascalize type} = function(opt_rule) {
       var rule = /** @type {{
         resolve: (Object),
         as: (Object|undefined),
         #{createArgsForRule args}
         by: (Function|undefined)
-      }} */ (this.getRuleFor(#{type}));
+      }} */ (opt_rule || this.getRuleFor(#{type}));
       #{createArgsDefinition args}
       if (this.resolved#{pascalize type}) return this.resolved#{pascalize type};
       this.resolved#{pascalize type} = /** @type {#{type}} */ (this.createInstance(#{
@@ -100,7 +127,64 @@ createFactory = (type, definition, diContainerName, isPrivate) ->
       return this.resolved#{pascalize type};
     };
   """
-  # Remove empty lines.
+
+###*
+  @param {string} type
+  @param {Array.<string>} types
+  @return {string}
+###
+createInterfaceImplementationSwitch = (type, types) ->
+  return '' if !types.length
+  lines = for type in types
+    "case #{type}: return this.resolve#{pascalize type}(rule);"
+
+  """
+  switch (rule.as || #{type}) {
+      #{lines.join '\n    '}
+      default: return null;
+    }
+  """
+
+###*
+  @param {Array} args
+  @return {string}
+###
+createArgsForRule = (args) ->
+  return '' if !args.length
+  lines = for arg in args
+    "#{arg.name}: (#{arg.typeExpression}|undefined)"
+
+  """
+  with: ({
+        #{lines.join ',\n\n      '}
+      }),
+  """
+
+###*
+  @param {Array.<string>} args
+  @return {string}
+###
+createArgsDefinition = (args) ->
+  return '' if !args.length
+  lines = args.map (arg) ->
+    line = "rule['with'].#{arg.name} !== undefined ? rule['with'].#{arg.name} : "
+    if arg.type
+      line += "this.resolve#{pascalize arg.type || ''}()"
+    else
+      line += "void 0"
+    line
+
+  """
+  var args = [
+      #{lines.join ',\n\n    '}
+    ];
+  """
+
+###*
+  @param {string} src
+  @return {string}
+###
+removeEmptyLines = (src) ->
   lines = (line for line in src.split '\n' when line.trim())
   lines.join '\n'
 
@@ -123,37 +207,3 @@ camelize = (str) ->
     camelized += if i == 0 then char.toLowerCase() else char.toUpperCase()
     camelized += m.slice 1
   camelized
-
-###*
-  @param {Array} args
-###
-createArgsForRule = (args) ->
-  return '' if !args.length
-  lines = for arg in args
-    "#{arg.name}: (#{arg.typeExpression}|undefined)"
-
-  """
-  with: ({
-        #{lines.join ',\n\n      '}
-      }),
-  """
-
-###*
-  @param {Array.<string>} args
-  @return {string}
-###
-createArgsDefinition = (args) ->
-  return '' if !args.length
-  lines = args.map (arg) ->
-    line = "rule['with'].#{arg.name} || "
-    if arg.type
-      line += "this.resolve#{pascalize arg.type || ''}()"
-    else
-      line += "void 0"
-    line
-
-  """
-  var args = [
-      #{lines.join ',\n\n    '}
-    ];
-  """
