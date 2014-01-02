@@ -41,9 +41,9 @@ module.exports = (diContainerName) ->
         for (var i = 0; i < arguments.length; i++) {
           var rule = arguments[i];
           goog.asserts.assertObject(rule,
-            'DI container: Configuration rule has to be type of object.');
+            'DI container: Configuration rule is not type of object.');
           goog.asserts.assertObject(rule.resolve,
-            'DI container: Rule resolve property must be type of object.');
+            'DI container: Rule resolve property is not type of object.');
           goog.asserts.assert(this.ruleIsWellConfigured(rule),
             'DI container: Rule has to define at least one of these props: with, as, by.');
           goog.asserts.assert(this.ruleNotYetConfigured(rule),
