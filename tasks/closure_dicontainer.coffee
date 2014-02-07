@@ -72,4 +72,4 @@ module.exports = (grunt) ->
 
     src += line + '\n'
     grunt.file.write depsPath, src
-    grunt.log.writeln "File \"#{depsPath}\" created."
+    grunt.log.writeln "File \"#{depsPath}\" updated."
