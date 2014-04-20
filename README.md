@@ -9,6 +9,10 @@
 - run-time configuration
 - advanced mode compilation friendly
 
+## Update!
+
+I migrated Este to [gulp.js](http://gulpjs.com). Please switch to new [Este](https://github.com/steida/este).
+
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
 
